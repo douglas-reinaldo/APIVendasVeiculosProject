@@ -14,22 +14,22 @@ public class VeiculoService {
     @Autowired
     private VeiculoRepository _veiculoRepository;
 
-    public Veiculo salvar(Veiculo veiculo)
+    public Veiculo Salvar(Veiculo veiculo)
     {
         return _veiculoRepository.save(veiculo);
     }
 
-    public List<Veiculo> listarVeiculos()
+    public List<Veiculo> ListarVeiculos()
     {
         return _veiculoRepository.findAll();
     }
 
-    public Optional<Veiculo> buscarVeiculoPorId(Long id)
+    public Optional<Veiculo> BuscarVeiculoPorId(Long id)
     {
         return _veiculoRepository.findById(id);
     }
 
-    public Optional<Veiculo> atualizar(long id, Veiculo veiculoAtualizado) {
+    public Optional<Veiculo> Atualizar(long id, Veiculo veiculoAtualizado) {
 
 
         return _veiculoRepository.findById(id)
@@ -40,15 +40,15 @@ public class VeiculoService {
                     veiculoExistente.setPreco(veiculoAtualizado.getPreco());
                     veiculoExistente.setVendido(veiculoAtualizado.getVendido());
 
-                    System.out.println(veiculoExistente);
                     return _veiculoRepository.save(veiculoExistente);
                 });
 
     }
 
-    public boolean deletarVeiculoPorId(Long id)
+    public boolean DeletarVeiculoPorId(Long id)
     {
         _veiculoRepository.deleteById(id);
         return true;
     }
+
 }

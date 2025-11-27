@@ -1,5 +1,6 @@
 package com.example.minha_api_vendas.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -19,6 +20,7 @@ public class Veiculo {
     private Boolean vendido;
 
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "vendedor_id")
     private Vendedor vendedor;
 }
