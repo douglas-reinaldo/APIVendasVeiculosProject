@@ -17,4 +17,8 @@ public class Veiculo {
     private int ano;
     private Double preco;
     private Boolean vendido;
+
+    @ManyToOne
+    @JoinColumn(name = "vendedor_id")
+    private Vendedor vendedor;
 }
