@@ -39,7 +39,7 @@ public class VendedorController {
     {
         try {
             Vendedor vendedorCriado = _vendedorService.salvar(vendedor);
-            return ResponseEntity.ok().body(vendedorCriado);
+            return ResponseEntity.status(HttpStatus.CREATED).body(vendedorCriado);
         }
         catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();

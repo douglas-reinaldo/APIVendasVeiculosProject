@@ -1,6 +1,7 @@
 package com.example.minha_api_vendas.controller;
 
-import com.example.minha_api_vendas.DTO.VeiculoDTO;
+import com.example.minha_api_vendas.dto.veiculo.VeiculoInputDTO;
+import com.example.minha_api_vendas.dto.veiculo.VeiculoDTO;
 import com.example.minha_api_vendas.model.Veiculo;
 import com.example.minha_api_vendas.service.VeiculoService;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,15 +20,15 @@ public class VeiculoController {
     private VeiculoService _veiculoService;
 
     @GetMapping
-    public List<Veiculo> ListarVeiculos()
+    public List<VeiculoDTO> ListarVeiculos()
     {
         return _veiculoService.ListarVeiculos();
     }
 
     @PostMapping
-    public ResponseEntity<Veiculo> criarVeiculo(@RequestBody VeiculoDTO veiculoDTO) {
+    public ResponseEntity<VeiculoDTO> criarVeiculo(@RequestBody VeiculoInputDTO veiculoInputDTO) {
         try {
-            Veiculo novoVeiculo = _veiculoService.Salvar(veiculoDTO);
+            VeiculoDTO novoVeiculo = _veiculoService.Salvar(veiculoInputDTO);
             return ResponseEntity.status(HttpStatus.CREATED).body(novoVeiculo);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -35,7 +36,7 @@ public class VeiculoController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Veiculo> buscarPorId(@PathVariable Long id)
+    public ResponseEntity<VeiculoDTO> buscarPorId(@PathVariable Long id)
     {
         return _veiculoService.BuscarVeiculoPorId(id)
                 .map(ResponseEntity::ok)
@@ -43,8 +44,8 @@ public class VeiculoController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Veiculo> atualizarVeiculo(@PathVariable Long id, @RequestBody Veiculo veiculoDetalhes) {
-        return _veiculoService.Atualizar(id, veiculoDetalhes)
+    public ResponseEntity<VeiculoDTO> atualizarVeiculo(@PathVariable Long id, @RequestBody VeiculoInputDTO veiculoInputDTO) {
+        return _veiculoService.Atualizar(id, veiculoInputDTO)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }

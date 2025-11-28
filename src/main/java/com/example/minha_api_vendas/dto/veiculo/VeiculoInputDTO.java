@@ -1,10 +1,10 @@
-package com.example.minha_api_vendas.DTO;
+package com.example.minha_api_vendas.dto.veiculo;
 
 import lombok.Data;
 import org.jetbrains.annotations.NotNull;
 
 @Data
-public class VeiculoDTO {
+public class VeiculoInputDTO {
 
     private String marca;
     private String modelo;

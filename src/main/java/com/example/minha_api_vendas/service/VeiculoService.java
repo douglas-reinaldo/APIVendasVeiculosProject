@@ -1,16 +1,16 @@
 package com.example.minha_api_vendas.service;
 
-import com.example.minha_api_vendas.DTO.VeiculoDTO;
+import com.example.minha_api_vendas.dto.veiculo.VeiculoInputDTO;
+import com.example.minha_api_vendas.dto.veiculo.VeiculoDTO;
 import com.example.minha_api_vendas.model.Veiculo;
 import com.example.minha_api_vendas.model.Vendedor;
 import com.example.minha_api_vendas.repository.VeiculoRepository;
-import org.springframework.beans.InvalidPropertyException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.config.ConfigDataResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class VeiculoService {
@@ -21,47 +21,55 @@ public class VeiculoService {
     @Autowired
     private VendedorService _vendedorService;
 
-    public Veiculo Salvar(VeiculoDTO veiculoDTO) throws Exception {
-        Vendedor vendedor = _vendedorService.BuscarVendedorPorId(veiculoDTO.getVendedorId())
+    public VeiculoDTO Salvar(VeiculoInputDTO veiculoInputDTO) throws Exception {
+        Vendedor vendedor = _vendedorService.BuscarVendedorPorId(veiculoInputDTO.getVendedorId())
                 .orElseThrow(() -> new Exception("Vendedor não encontrado"));
 
 
         Veiculo veiculo = new Veiculo();
-        veiculo.setAno(veiculoDTO.getAno());
-        veiculo.setMarca(veiculoDTO.getMarca());
-        veiculo.setModelo(veiculoDTO.getModelo());
-        veiculo.setPreco(veiculoDTO.getPreco());
-        veiculo.setVendido(veiculoDTO.getVendido());
+        veiculo.setAno(veiculoInputDTO.getAno());
+        veiculo.setMarca(veiculoInputDTO.getMarca());
+        veiculo.setModelo(veiculoInputDTO.getModelo());
+        veiculo.setPreco(veiculoInputDTO.getPreco());
+        veiculo.setVendido(veiculoInputDTO.getVendido());
 
         veiculo.setVendedor(vendedor);
-        return _veiculoRepository.save(veiculo);
+        Veiculo salvo = _veiculoRepository.save(veiculo);
+
+        return MapearParaDTO(salvo);
     }
 
-    public List<Veiculo> ListarVeiculos()
+
+    public List<VeiculoDTO> ListarVeiculos()
     {
-        return _veiculoRepository.findAll();
+        return _veiculoRepository.findAll().stream()
+                .map(this::MapearParaDTO)
+                .collect(Collectors.toList());
+
     }
 
-    public Optional<Veiculo> BuscarVeiculoPorId(Long id)
+    public Optional<VeiculoDTO> BuscarVeiculoPorId(Long id)
     {
-        return _veiculoRepository.findById(id);
+        return _veiculoRepository.findById(id)
+                .map(this::MapearParaDTO);
     }
 
-    public Optional<Veiculo> Atualizar(long id, Veiculo veiculoAtualizado) {
-
+    public Optional<VeiculoDTO> Atualizar(long id, VeiculoInputDTO dto) {
 
         return _veiculoRepository.findById(id)
                 .map(veiculoExistente -> {
-                    veiculoExistente.setMarca(veiculoAtualizado.getMarca());
-                    veiculoExistente.setModelo(veiculoAtualizado.getModelo());
-                    veiculoExistente.setAno(veiculoAtualizado.getAno());
-                    veiculoExistente.setPreco(veiculoAtualizado.getPreco());
-                    veiculoExistente.setVendido(veiculoAtualizado.getVendido());
+                    veiculoExistente.setMarca(dto.getMarca());
+                    veiculoExistente.setModelo(dto.getModelo());
+                    veiculoExistente.setAno(dto.getAno());
+                    veiculoExistente.setPreco(dto.getPreco());
+                    veiculoExistente.setVendido(dto.getVendido());
 
-                    return _veiculoRepository.save(veiculoExistente);
+                    Veiculo salvo = _veiculoRepository.save(veiculoExistente);
+
+                    return MapearParaDTO(salvo);
                 });
-
     }
+
 
     public boolean DeletarVeiculoPorId(Long id)
     {
@@ -71,6 +79,18 @@ public class VeiculoService {
             return true;
         }
         return false;
+    }
+
+    private VeiculoDTO MapearParaDTO(Veiculo veiculo) {
+        VeiculoDTO dto = new VeiculoDTO();
+        dto.setId(veiculo.getId());
+        dto.setMarca(veiculo.getMarca());
+        dto.setModelo(veiculo.getModelo());
+        dto.setAno(veiculo.getAno());
+        dto.setPreco(veiculo.getPreco());
+        dto.setVendido(veiculo.getVendido());
+
+        return dto;
     }
 
 }
