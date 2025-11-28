@@ -4,14 +4,10 @@ import com.example.minha_api_vendas.dto.veiculo.VeiculoDTO;
 import com.example.minha_api_vendas.dto.vendedor.VendedorDetalhesDTO;
 import com.example.minha_api_vendas.dto.vendedor.VendedorInputDTO;
 import com.example.minha_api_vendas.dto.vendedor.VendedorListagemDTO;
-import com.example.minha_api_vendas.model.Veiculo;
 import com.example.minha_api_vendas.model.Vendedor;
-import com.example.minha_api_vendas.repository.VeiculoRepository;
 import com.example.minha_api_vendas.repository.VendedorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;

@@ -2,12 +2,14 @@ package com.example.minha_api_vendas.service;
 
 import com.example.minha_api_vendas.dto.veiculo.VeiculoInputDTO;
 import com.example.minha_api_vendas.dto.veiculo.VeiculoDTO;
-import com.example.minha_api_vendas.dto.vendedor.VendedorDetalhesDTO;
 import com.example.minha_api_vendas.model.Veiculo;
 import com.example.minha_api_vendas.model.Vendedor;
 import com.example.minha_api_vendas.repository.VeiculoRepository;
+import com.example.minha_api_vendas.repository.VendedorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
@@ -20,11 +22,14 @@ public class VeiculoService {
     private VeiculoRepository _veiculoRepository;
 
     @Autowired
-    private VendedorService _vendedorService;
+    private VendedorRepository _vendedorRepository;
 
-    public VeiculoDTO Salvar(VeiculoInputDTO veiculoInputDTO) throws Exception {
-        Vendedor vendedor = _vendedorService.BuscarVendedorEntidade(veiculoInputDTO.getVendedorId())
-                .orElseThrow();
+    public VeiculoDTO Salvar(VeiculoInputDTO veiculoInputDTO) {
+
+        Vendedor vendedor = _vendedorRepository.findById(veiculoInputDTO.getVendedorId())
+                .orElseThrow(() ->
+                        new ResponseStatusException(HttpStatus.NOT_FOUND, "Vendedor não encontrado")
+                );
 
         Veiculo veiculo = new Veiculo();
         veiculo.setAno(veiculoInputDTO.getAno());
@@ -34,10 +39,14 @@ public class VeiculoService {
         veiculo.setVendido(veiculoInputDTO.getVendido());
 
         veiculo.setVendedor(vendedor);
+
         Veiculo salvo = _veiculoRepository.save(veiculo);
 
         return MapearParaDTO(salvo);
     }
+
+
+
 
 
     public List<VeiculoDTO> ListarVeiculos()

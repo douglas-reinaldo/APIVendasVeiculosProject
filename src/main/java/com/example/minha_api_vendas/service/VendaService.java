@@ -3,6 +3,7 @@ package com.example.minha_api_vendas.service;
 import com.example.minha_api_vendas.dto.veiculo.VeiculoDTO;
 import com.example.minha_api_vendas.dto.venda.VendaInputDTO;
 import com.example.minha_api_vendas.dto.venda.VendaOutputDTO;
+import com.example.minha_api_vendas.dto.vendedor.VendedorDetalhesDTO;
 import com.example.minha_api_vendas.model.Veiculo;
 import com.example.minha_api_vendas.model.Venda;
 import com.example.minha_api_vendas.model.Vendedor;
@@ -69,6 +70,12 @@ public class VendaService {
         dto.setVeiculoModelo(venda.getVeiculo().getModelo());
 
         return dto;
+    }
+
+    public Optional<VendaOutputDTO> BuscarVendaPorId(Long id)
+    {
+        return _vendaRepository.findById(id)
+                .map(this::MapearParaDTO);
     }
 
 }
