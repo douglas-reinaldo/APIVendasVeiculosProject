@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.function.EntityResponse;
 
+import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -64,8 +65,13 @@ public class VendedorController {
 
 
     @GetMapping("/{id}/veiculos")
-    public List<Veiculo> listarVeiculosPorVendedorId(@PathVariable long id)
+    public ResponseEntity<List<Veiculo>> listarVeiculosPorVendedorId(@PathVariable long id)
     {
-        return _vendedorService.ListarVeiculos(id);
+        if (_vendedorService.BuscarVendedorPorId(id).isEmpty())
+        {
+            return ResponseEntity.notFound().build();
+        }
+        List<Veiculo> veiculos = _vendedorService.ListarVeiculos(id);
+        return ResponseEntity.ok(veiculos);
     }
 }

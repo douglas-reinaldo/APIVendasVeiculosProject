@@ -1,5 +1,6 @@
 package com.example.minha_api_vendas.controller;
 
+import com.example.minha_api_vendas.DTO.VeiculoDTO;
 import com.example.minha_api_vendas.model.Veiculo;
 import com.example.minha_api_vendas.service.VeiculoService;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,11 +25,11 @@ public class VeiculoController {
     }
 
     @PostMapping
-    public ResponseEntity<Veiculo> criarVeiculo(@RequestBody Veiculo veiculo) {
+    public ResponseEntity<Veiculo> criarVeiculo(@RequestBody VeiculoDTO veiculoDTO) {
         try {
-            Veiculo novoVeiculo = _veiculoService.Salvar(veiculo);
-            return ResponseEntity.ok().body(veiculo);
-        } catch (IllegalArgumentException e) {
+            Veiculo novoVeiculo = _veiculoService.Salvar(veiculoDTO);
+            return ResponseEntity.status(HttpStatus.CREATED).body(novoVeiculo);
+        } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }

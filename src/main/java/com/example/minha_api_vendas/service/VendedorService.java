@@ -6,6 +6,7 @@ import com.example.minha_api_vendas.repository.VendedorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -42,14 +43,19 @@ public class VendedorService {
 
     public boolean DeletarVendedorPorId(Long id)
     {
-        _vendedorRepository.deleteById(id);
-        return true;
+        if (_vendedorRepository.existsById(id)) {
+            _vendedorRepository.deleteById(id);
+            return true;
+        }
+        return false;
     }
 
     public List<Veiculo> ListarVeiculos(long id)
     {
-        Optional<Vendedor> vendedor =  _vendedorRepository.findById(id);
-        return vendedor.get().getVeiculos();
+        return _vendedorRepository.findById(id)
+                .map(Vendedor::getVeiculos)
+                .orElse(Collections.emptyList());
+
     }
 
 
