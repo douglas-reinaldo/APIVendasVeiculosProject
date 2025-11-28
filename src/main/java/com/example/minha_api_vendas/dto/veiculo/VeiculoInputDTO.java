@@ -16,3 +16,4 @@ public class VeiculoInputDTO {
     @NotNull
     private Long vendedorId;
 }
+
