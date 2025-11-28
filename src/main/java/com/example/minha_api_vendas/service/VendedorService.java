@@ -1,11 +1,17 @@
 package com.example.minha_api_vendas.service;
 
+import com.example.minha_api_vendas.dto.veiculo.VeiculoDTO;
+import com.example.minha_api_vendas.dto.vendedor.VendedorDetalhesDTO;
+import com.example.minha_api_vendas.dto.vendedor.VendedorInputDTO;
+import com.example.minha_api_vendas.dto.vendedor.VendedorListagemDTO;
 import com.example.minha_api_vendas.model.Veiculo;
 import com.example.minha_api_vendas.model.Vendedor;
+import com.example.minha_api_vendas.repository.VeiculoRepository;
 import com.example.minha_api_vendas.repository.VendedorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -15,31 +21,50 @@ public class VendedorService {
     @Autowired
     private VendedorRepository _vendedorRepository;
 
-    public List<Vendedor> ListarVendedores()
+    @Autowired
+    private VeiculoService _veiculoService;
+
+    public List<VendedorListagemDTO> ListarVendedores()
     {
-        return _vendedorRepository.findAll();
+        return _vendedorRepository.findAll()
+                .stream()
+                .map(this::MapearParaListagemDTO)
+                .toList();
     }
 
-    public Optional<Vendedor> BuscarVendedorPorId(Long id)
+    public Optional<VendedorDetalhesDTO> BuscarVendedorPorId(Long id)
+    {
+        return _vendedorRepository.findById(id)
+                .map(this::MapearParaDetalhesDTO);
+    }
+
+    public Optional<Vendedor> BuscarVendedorEntidade(Long id)
     {
         return _vendedorRepository.findById(id);
     }
 
-    public Vendedor salvar(Vendedor vendedor)
+    public VendedorListagemDTO salvar(VendedorInputDTO vendedor)
     {
-        return _vendedorRepository.save(vendedor);
+        Vendedor vendedorSalvo = MapearParaEntidade(vendedor);
+        _vendedorRepository.save(vendedorSalvo);
+        return MapearParaListagemDTO(vendedorSalvo);
     }
 
-    public Optional<Vendedor> atualizar(Long id, Vendedor vendedor)
-    {
+    public Optional<VendedorListagemDTO> atualizar(Long id, VendedorInputDTO vendedor) {
+
         return _vendedorRepository.findById(id)
                 .map(vendedorExistente -> {
+
                     vendedorExistente.setNome(vendedor.getNome());
                     vendedorExistente.setEmail(vendedor.getEmail());
                     vendedorExistente.setTelefone(vendedor.getTelefone());
-                    return _vendedorRepository.save(vendedorExistente);
+
+                    Vendedor salvo = _vendedorRepository.save(vendedorExistente);
+
+                    return MapearParaListagemDTO(salvo);
                 });
     }
+
 
     public boolean DeletarVendedorPorId(Long id)
     {
@@ -50,13 +75,50 @@ public class VendedorService {
         return false;
     }
 
-    public List<Veiculo> ListarVeiculos(long id)
+    public List<VeiculoDTO> ListarVeiculos(long id)
     {
         return _vendedorRepository.findById(id)
-                .map(Vendedor::getVeiculos)
+                .map(this::MapearParaDetalhesDTO)
+                .map(VendedorDetalhesDTO::getVeiculos)
                 .orElse(Collections.emptyList());
-
     }
+
+    private VendedorListagemDTO MapearParaListagemDTO(Vendedor vendedor)
+    {
+        VendedorListagemDTO vendedorDTO = new VendedorListagemDTO();
+        vendedorDTO.setNome(vendedor.getNome());
+        vendedorDTO.setEmail(vendedor.getEmail());
+        vendedorDTO.setTelefone(vendedor.getTelefone());
+        vendedorDTO.setId(vendedor.getId());
+        return vendedorDTO;
+    }
+
+    private VendedorDetalhesDTO MapearParaDetalhesDTO(Vendedor vendedor)
+    {
+        VendedorDetalhesDTO vendedorDTO = new VendedorDetalhesDTO();
+        vendedorDTO.setNome(vendedor.getNome());
+        vendedorDTO.setEmail(vendedor.getEmail());
+        vendedorDTO.setTelefone(vendedor.getTelefone());
+        vendedorDTO.setId(vendedor.getId());
+
+        List<VeiculoDTO> veiculoDTOS = vendedor.getVeiculos()
+                .stream()
+                .map(v -> _veiculoService.MapearParaDTO(v))
+                .toList();
+
+        vendedorDTO.setVeiculos(veiculoDTOS);
+        return vendedorDTO;
+    }
+
+    protected Vendedor MapearParaEntidade(VendedorInputDTO dto)
+    {
+        Vendedor vendedor = new Vendedor();
+        vendedor.setNome(dto.getNome());
+        vendedor.setEmail(dto.getEmail());
+        vendedor.setTelefone(dto.getTelefone());
+        return vendedor;
+    }
+
 
 
 

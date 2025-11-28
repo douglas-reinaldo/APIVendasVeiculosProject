@@ -2,6 +2,7 @@ package com.example.minha_api_vendas.service;
 
 import com.example.minha_api_vendas.dto.veiculo.VeiculoInputDTO;
 import com.example.minha_api_vendas.dto.veiculo.VeiculoDTO;
+import com.example.minha_api_vendas.dto.vendedor.VendedorDetalhesDTO;
 import com.example.minha_api_vendas.model.Veiculo;
 import com.example.minha_api_vendas.model.Vendedor;
 import com.example.minha_api_vendas.repository.VeiculoRepository;
@@ -22,9 +23,8 @@ public class VeiculoService {
     private VendedorService _vendedorService;
 
     public VeiculoDTO Salvar(VeiculoInputDTO veiculoInputDTO) throws Exception {
-        Vendedor vendedor = _vendedorService.BuscarVendedorPorId(veiculoInputDTO.getVendedorId())
-                .orElseThrow(() -> new Exception("Vendedor não encontrado"));
-
+        Vendedor vendedor = _vendedorService.BuscarVendedorEntidade(veiculoInputDTO.getVendedorId())
+                .orElseThrow();
 
         Veiculo veiculo = new Veiculo();
         veiculo.setAno(veiculoInputDTO.getAno());
@@ -81,7 +81,7 @@ public class VeiculoService {
         return false;
     }
 
-    private VeiculoDTO MapearParaDTO(Veiculo veiculo) {
+    protected VeiculoDTO MapearParaDTO(Veiculo veiculo) {
         VeiculoDTO dto = new VeiculoDTO();
         dto.setId(veiculo.getId());
         dto.setMarca(veiculo.getMarca());

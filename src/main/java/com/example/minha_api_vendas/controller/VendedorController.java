@@ -1,5 +1,9 @@
 package com.example.minha_api_vendas.controller;
 
+import com.example.minha_api_vendas.dto.veiculo.VeiculoDTO;
+import com.example.minha_api_vendas.dto.vendedor.VendedorDetalhesDTO;
+import com.example.minha_api_vendas.dto.vendedor.VendedorInputDTO;
+import com.example.minha_api_vendas.dto.vendedor.VendedorListagemDTO;
 import com.example.minha_api_vendas.model.Veiculo;
 import com.example.minha_api_vendas.model.Vendedor;
 import com.example.minha_api_vendas.service.VendedorService;
@@ -20,13 +24,13 @@ public class VendedorController {
     private VendedorService _vendedorService;
 
     @GetMapping
-    public List<Vendedor> ListarVendedores()
+    public List<VendedorListagemDTO> ListarVendedores()
     {
         return _vendedorService.ListarVendedores();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Vendedor> ObterVendedorPorId(@PathVariable long id)
+    public ResponseEntity<VendedorDetalhesDTO> ObterVendedorPorId(@PathVariable long id)
     {
         return _vendedorService.BuscarVendedorPorId(id)
                 .map(ResponseEntity::ok)
@@ -35,10 +39,10 @@ public class VendedorController {
 
 
     @PostMapping
-    public ResponseEntity<Vendedor> cadastrarVendedor(@RequestBody Vendedor vendedor)
+    public ResponseEntity<VendedorListagemDTO> cadastrarVendedor(@RequestBody VendedorInputDTO vendedor)
     {
         try {
-            Vendedor vendedorCriado = _vendedorService.salvar(vendedor);
+            VendedorListagemDTO vendedorCriado = _vendedorService.salvar(vendedor);
             return ResponseEntity.status(HttpStatus.CREATED).body(vendedorCriado);
         }
         catch (IllegalArgumentException e) {
@@ -47,7 +51,7 @@ public class VendedorController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Vendedor> AtualizarVendedor(@PathVariable long id, @RequestBody Vendedor vendedor)
+    public ResponseEntity<VendedorListagemDTO> AtualizarVendedor(@PathVariable long id, @RequestBody VendedorInputDTO vendedor)
     {
         return _vendedorService.atualizar(id, vendedor)
                 .map(ResponseEntity::ok)
@@ -55,7 +59,7 @@ public class VendedorController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Vendedor> removerVendedor(@PathVariable long id)
+    public ResponseEntity removerVendedor(@PathVariable long id)
     {
         if (_vendedorService.DeletarVendedorPorId(id)) {
             return ResponseEntity.noContent().build();
@@ -65,13 +69,13 @@ public class VendedorController {
 
 
     @GetMapping("/{id}/veiculos")
-    public ResponseEntity<List<Veiculo>> listarVeiculosPorVendedorId(@PathVariable long id)
+    public ResponseEntity<List<VeiculoDTO>> listarVeiculosPorVendedorId(@PathVariable long id)
     {
         if (_vendedorService.BuscarVendedorPorId(id).isEmpty())
         {
             return ResponseEntity.notFound().build();
         }
-        List<Veiculo> veiculos = _vendedorService.ListarVeiculos(id);
+        List<VeiculoDTO> veiculos = _vendedorService.ListarVeiculos(id);
         return ResponseEntity.ok(veiculos);
     }
 }
