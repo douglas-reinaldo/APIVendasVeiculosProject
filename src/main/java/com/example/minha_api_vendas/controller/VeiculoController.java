@@ -4,6 +4,7 @@ import com.example.minha_api_vendas.dto.veiculo.VeiculoInputDTO;
 import com.example.minha_api_vendas.dto.veiculo.VeiculoDTO;
 import com.example.minha_api_vendas.model.Veiculo;
 import com.example.minha_api_vendas.service.VeiculoService;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,7 +28,7 @@ public class VeiculoController {
     }
 
     @PostMapping
-    public ResponseEntity<VeiculoDTO> criarVeiculo(@RequestBody VeiculoInputDTO veiculoInputDTO) {
+    public ResponseEntity<VeiculoDTO> criarVeiculo(@Valid @RequestBody VeiculoInputDTO veiculoInputDTO) {
         try {
             VeiculoDTO novoVeiculo = _veiculoService.Salvar(veiculoInputDTO);
             return ResponseEntity.status(HttpStatus.CREATED).body(novoVeiculo);
@@ -45,7 +46,7 @@ public class VeiculoController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<VeiculoDTO> atualizarVeiculo(@PathVariable Long id, @RequestBody VeiculoInputDTO veiculoInputDTO) {
+    public ResponseEntity<VeiculoDTO> atualizarVeiculo(@PathVariable Long id, @Valid @RequestBody VeiculoInputDTO veiculoInputDTO) {
         return _veiculoService.Atualizar(id, veiculoInputDTO)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());

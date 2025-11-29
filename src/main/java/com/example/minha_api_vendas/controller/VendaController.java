@@ -3,6 +3,7 @@ package com.example.minha_api_vendas.controller;
 import com.example.minha_api_vendas.dto.venda.VendaInputDTO;
 import com.example.minha_api_vendas.dto.venda.VendaOutputDTO;
 import com.example.minha_api_vendas.service.VendaService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +26,7 @@ public class VendaController {
     }
 
     @PostMapping
-    public ResponseEntity<VendaOutputDTO> RegistrarVenda(@RequestBody VendaInputDTO vendaInputDTO)
+    public ResponseEntity<VendaOutputDTO> RegistrarVenda(@Valid @RequestBody VendaInputDTO vendaInputDTO)
     {
         try {
             VendaOutputDTO novaVenda = _vendaService.RegistrarVenda(vendaInputDTO);

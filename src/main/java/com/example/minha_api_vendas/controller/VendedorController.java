@@ -7,6 +7,7 @@ import com.example.minha_api_vendas.dto.vendedor.VendedorListagemDTO;
 import com.example.minha_api_vendas.model.Veiculo;
 import com.example.minha_api_vendas.model.Vendedor;
 import com.example.minha_api_vendas.service.VendedorService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -40,7 +41,7 @@ public class VendedorController {
 
 
     @PostMapping
-    public ResponseEntity<VendedorListagemDTO> cadastrarVendedor(@RequestBody VendedorInputDTO vendedor)
+    public ResponseEntity<VendedorListagemDTO> cadastrarVendedor(@Valid @RequestBody VendedorInputDTO vendedor)
     {
         try {
             VendedorListagemDTO vendedorCriado = _vendedorService.salvar(vendedor);
@@ -52,7 +53,7 @@ public class VendedorController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<VendedorListagemDTO> AtualizarVendedor(@PathVariable long id, @RequestBody VendedorInputDTO vendedor)
+    public ResponseEntity<VendedorListagemDTO> AtualizarVendedor(@PathVariable long id, @Valid @RequestBody VendedorInputDTO vendedor)
     {
         return _vendedorService.atualizar(id, vendedor)
                 .map(ResponseEntity::ok)
