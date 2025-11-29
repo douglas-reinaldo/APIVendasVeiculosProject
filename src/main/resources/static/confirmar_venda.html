@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirmar Venda - Sistema de Gestão</title>
+    <meta name="description" content="Confirme a venda do veículo selecionado" />
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        :root {
+            --color-primary: 199 89% 48%;
+            --color-primary-glow: 199 89% 58%;
+            --color-secondary: 174 72% 56%;
+            --color-background: 210 20% 98%;
+            --color-foreground: 215 25% 15%;
+            --color-card: 0 0% 100%;
+            --color-muted: 210 20% 95%;
+            --color-muted-foreground: 215 16% 47%;
+            --color-border: 215 20% 88%;
+            --color-destructive: 0 84% 60%;
+            --color-success: 142 76% 36%;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: hsl(var(--color-background));
+            color: hsl(var(--color-foreground));
+            line-height: 1.6;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 600;
+        }
+
+        .gradient-primary {
+            background: linear-gradient(135deg, hsl(199 89% 48%), hsl(174 72% 56%));
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, hsl(199 89% 48%), hsl(174 72% 56%));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .shadow-elegant {
+            box-shadow: 0 10px 40px -10px hsl(199 89% 48% / 0.15);
+        }
+
+        .card {
+            background: linear-gradient(145deg, hsl(0 0% 100% / 0.9), hsl(210 20% 98% / 0.7));
+            border: 1px solid hsl(var(--color-border) / 0.5);
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 40px -10px hsl(199 89% 48% / 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, hsl(0 84% 60%), hsl(0 84% 50%));
+            color: white;
+            padding: 1.5rem;
+            font-size: 1.25rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            transition: all 0.3s;
+            cursor: pointer;
+            border: none;
+            font-family: 'Inter', sans-serif;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .btn-success {
+            background: hsl(var(--color-success));
+            color: white;
+            box-shadow: 0 10px 40px -10px hsl(142 76% 36% / 0.3);
+        }
+
+        .btn-success:hover {
+            opacity: 0.9;
+        }
+
+        .btn-success:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid hsl(var(--color-border));
+            color: hsl(var(--color-foreground));
+        }
+
+        .btn-outline:hover {
+            background: hsl(var(--color-muted));
+        }
+
+        .spinner {
+            border: 2px solid white;
+            border-top-color: transparent;
+            border-radius: 50%;
+            width: 1rem;
+            height: 1rem;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .animate-slide-up {
+            animation: slideUp 0.4s ease-out;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .alert-warning {
+            background: hsl(45 93% 47% / 0.1);
+            color: hsl(45 93% 47%);
+            border: 1px solid hsl(45 93% 47% / 0.2);
+        }
+
+        .alert-danger {
+            background: hsl(0 84% 60% / 0.1);
+            color: hsl(0 84% 60%);
+            border: 1px solid hsl(0 84% 60% / 0.2);
+        }
+
+        .alert-success {
+            background: hsl(142 76% 36% / 0.1);
+            color: hsl(142 76% 36%);
+            border: 1px solid hsl(142 76% 36% / 0.2);
+        }
+
+        .info-box {
+            background: hsl(var(--color-muted));
+            border-left: 4px solid hsl(var(--color-primary));
+            padding: 1rem 1.5rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .info-box label {
+            display: block;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: hsl(var(--color-muted-foreground));
+            margin-bottom: 0.25rem;
+            font-weight: 600;
+        }
+
+        .info-box h4 {
+            font-size: 1.5rem;
+            margin: 0;
+            color: hsl(var(--color-foreground));
+        }
+
+        .valor-final {
+            background: linear-gradient(135deg, hsl(142 76% 36% / 0.1), hsl(142 76% 36% / 0.05));
+            padding: 2rem;
+            border-radius: 0.75rem;
+            text-align: center;
+            border: 2px solid hsl(142 76% 36% / 0.2);
+            margin: 1.5rem 0;
+        }
+
+        .valor-final label {
+            display: block;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: hsl(var(--color-muted-foreground));
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .valor-final h2 {
+            font-size: 3rem;
+            color: hsl(var(--color-success));
+            margin: 0;
+            font-weight: 700;
+        }
+
+        header {
+            background: hsl(var(--color-card) / 0.95);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid hsl(var(--color-border) / 0.5);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+    </style>
+</head>
+<body>
+<!-- Header -->
+<header>
+    <div style="max-width: 1280px; margin: 0 auto; padding: 1.5rem;">
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+            <div class="gradient-primary" style="width: 3rem; height: 3rem; border-radius: 0.75rem; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 40px -10px hsl(199 89% 48% / 0.15);">
+                <i data-lucide="shopping-cart" style="width: 1.5rem; height: 1.5rem; color: white;"></i>
+            </div>
+            <div>
+                <h1 style="font-size: 1.875rem; font-weight: 700; margin: 0; color: hsl(0 84% 60%);">
+                    Confirmação de Venda
+                </h1>
+                <p style="color: hsl(var(--color-muted-foreground)); font-size: 0.875rem; margin: 0;">
+                    Revise e confirme a transação
+                </p>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Main Content -->
+<main style="max-width: 800px; margin: 0 auto; padding: 2rem;">
+    <div class="card animate-slide-up">
+        <div class="card-header">
+            <i data-lucide="file-text" style="width: 1.5rem; height: 1.5rem;"></i>
+            Detalhes para Registro Final
+        </div>
+
+        <div style="padding: 2rem;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                <div class="info-box">
+                    <label>Vendedor</label>
+                    <h4 id="infoVendedor">...</h4>
+                </div>
+                <div class="info-box">
+                    <label>Veículo</label>
+                    <h4 id="infoVeiculo">...</h4>
+                </div>
+            </div>
+
+            <div class="valor-final">
+                <label>Valor a ser Registrado</label>
+                <h2 id="infoPreco">R$ 0,00</h2>
+            </div>
+
+            <div class="alert alert-warning">
+                <i data-lucide="alert-triangle" style="width: 1.25rem; height: 1.25rem; flex-shrink: 0;"></i>
+                <span>Ao confirmar, o veículo será marcado como <strong>VENDIDO</strong> no sistema e uma nova venda será registrada. O valor final da venda será o preço atual do veículo.</span>
+            </div>
+
+            <span id="vendedorIdInfo" style="display: none;"></span>
+            <span id="veiculoIdInfo" style="display: none;"></span>
+
+            <div id="feedbackVenda" style="margin-bottom: 1rem;"></div>
+
+            <button class="btn btn-success" id="btnConfirmar" onclick="registrarVenda()" style="width: 100%; font-size: 1.125rem; padding: 1rem;">
+                <i data-lucide="check-circle" style="width: 1.25rem; height: 1.25rem;"></i>
+                CONFIRMAR VENDA AGORA
+            </button>
+        </div>
+    </div>
+</main>
+
+<script>
+    const API_URL_VENDAS = 'http://localhost:8080/api/vendas';
+    let VENDEDOR_ID = null;
+    let VEICULO_ID = null;
+    let PRECO_VEICULO = 0.0;
+
+    lucide.createIcons();
+    document.addEventListener('DOMContentLoaded', preencherDados);
+
+    function preencherDados() {
+        const params = new URLSearchParams(window.location.search);
+
+        VENDEDOR_ID = params.get('vendedorId');
+        VEICULO_ID = params.get('veiculoId');
+        const vendedorNome = params.get('vendedorNome');
+        const veiculoModelo = params.get('veiculoModelo');
+
+        const precoParam = params.get('preco');
+        const precoUrl = parseFloat(precoParam);
+
+        let isValid = true;
+        let erroMsg = 'Dados incompletos para a venda. ';
+
+        if (!VENDEDOR_ID || !VEICULO_ID) {
+            isValid = false;
+            erroMsg += '(IDs ausentes). ';
+        }
+        if (isNaN(precoUrl) || precoParam === null || precoParam === 'undefined') {
+            isValid = false;
+            erroMsg += `(Preço inválido ou ausente). `;
+        }
+
+        document.getElementById('infoVendedor').textContent = decodeURIComponent(vendedorNome || 'Vendedor Desconhecido');
+        document.getElementById('infoVeiculo').textContent = decodeURIComponent(veiculoModelo || 'Veículo Desconhecido');
+        document.getElementById('infoPreco').textContent = formatarMoeda(precoUrl);
+
+        document.getElementById('vendedorIdInfo').textContent = VENDEDOR_ID || '???';
+        document.getElementById('veiculoIdInfo').textContent = VEICULO_ID || '???';
+
+        if (!isValid) {
+            document.getElementById('feedbackVenda').innerHTML = `
+                <div class="alert alert-danger">
+                    <i data-lucide="x-circle" style="width: 1.25rem; height: 1.25rem;"></i>
+                    <span>${erroMsg} <strong>Volte e selecione novamente.</strong></span>
+                </div>
+            `;
+            document.getElementById('btnConfirmar').disabled = true;
+            document.getElementById('infoPreco').textContent = 'Valor Indisponível';
+            lucide.createIcons();
+            return;
+        }
+
+        PRECO_VEICULO = precoUrl;
+    }
+
+    async function registrarVenda() {
+        const btn = document.getElementById('btnConfirmar');
+        const feedbackDiv = document.getElementById('feedbackVenda');
+
+        btn.disabled = true;
+        btn.innerHTML = '<div class="spinner"></div> Registrando venda...';
+        feedbackDiv.innerHTML = '';
+
+        const vendaInputDTO = {
+            veiculoId: parseInt(VEICULO_ID),
+            vendedorId: parseInt(VENDEDOR_ID),
+            valorTotal: PRECO_VEICULO
+        };
+
+        try {
+            const response = await fetch(API_URL_VENDAS, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(vendaInputDTO)
+            });
+
+            if (response.status === 201) {
+                const novaVenda = await response.json();
+                const valorVendaFormatado = formatarMoeda(novaVenda.valorFinal || PRECO_VEICULO);
+
+                feedbackDiv.innerHTML = `
+                    <div class="alert alert-success">
+                        <i data-lucide="check-circle" style="width: 1.25rem; height: 1.25rem;"></i>
+                        <span><strong>Venda #${novaVenda.id} registrada com sucesso!</strong><br>Valor: ${valorVendaFormatado}</span>
+                    </div>
+                `;
+                lucide.createIcons();
+
+                btn.classList.remove('btn-success');
+                btn.classList.add('btn-outline');
+                btn.innerHTML = '<i data-lucide="arrow-left" style="width: 1rem; height: 1rem;"></i> Voltar à Lista de Vendedores';
+                btn.onclick = () => window.location.href = 'vendedores.html';
+                btn.disabled = false;
+                lucide.createIcons();
+
+            } else {
+                feedbackDiv.innerHTML = `
+                    <div class="alert alert-danger">
+                        <i data-lucide="x-octagon" style="width: 1.25rem; height: 1.25rem;"></i>
+                        <span>Erro ao registrar venda (Status: ${response.status}). O veículo já pode ter sido vendido.</span>
+                    </div>
+                `;
+                lucide.createIcons();
+                btn.disabled = false;
+                btn.innerHTML = '<i data-lucide="check-circle" style="width: 1.25rem; height: 1.25rem;"></i> CONFIRMAR VENDA AGORA';
+                lucide.createIcons();
+            }
+        } catch (error) {
+            feedbackDiv.innerHTML = `
+                <div class="alert alert-danger">
+                    <i data-lucide="wifi-off" style="width: 1.25rem; height: 1.25rem;"></i>
+                    <span>Erro de comunicação com a API.</span>
+                </div>
+            `;
+            lucide.createIcons();
+            btn.disabled = false;
+            btn.innerHTML = '<i data-lucide="check-circle" style="width: 1.25rem; height: 1.25rem;"></i> CONFIRMAR VENDA AGORA';
+            lucide.createIcons();
+        }
+    }
+
+    function formatarMoeda(valor) {
+        const valorNumerico = parseFloat(valor);
+        if (isNaN(valorNumerico)) return 'R$ 0,00';
+        return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valorNumerico);
+    }
+</script>
+</body>
+</html>

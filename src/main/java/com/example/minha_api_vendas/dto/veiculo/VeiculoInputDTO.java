@@ -11,8 +11,7 @@ public class VeiculoInputDTO {
     private String modelo;
     private int ano;
     private Double preco;
-    private Boolean vendido;
-
+    private String placa;
     @NotNull
     private Long vendedorId;
 }

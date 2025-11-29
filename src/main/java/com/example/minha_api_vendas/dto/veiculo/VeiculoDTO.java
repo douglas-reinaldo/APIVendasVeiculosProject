@@ -10,5 +10,6 @@ public class VeiculoDTO {
     private String modelo;
     private int ano;
     private Double preco;
+    private String placa;
     private Boolean vendido;
 }

@@ -19,6 +19,7 @@ public class Veiculo {
     private int ano;
     private Double preco;
     private Boolean vendido;
+    private String placa;
 
     @ManyToOne
     @JoinColumn(name = "vendedor_id")

@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Histórico de Vendas - Sistema de Gestão</title>
+    <meta name="description" content="Visualize o histórico completo de todas as vendas registradas" />
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        :root {
+            --color-primary: 199 89% 48%;
+            --color-primary-glow: 199 89% 58%;
+            --color-secondary: 174 72% 56%;
+            --color-background: 210 20% 98%;
+            --color-foreground: 215 25% 15%;
+            --color-card: 0 0% 100%;
+            --color-muted: 210 20% 95%;
+            --color-muted-foreground: 215 16% 47%;
+            --color-border: 215 20% 88%;
+            --color-success: 142 76% 36%;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: hsl(var(--color-background));
+            color: hsl(var(--color-foreground));
+            line-height: 1.6;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 600;
+        }
+
+        .gradient-primary {
+            background: linear-gradient(135deg, hsl(199 89% 48%), hsl(174 72% 56%));
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, hsl(199 89% 48%), hsl(174 72% 56%));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .shadow-elegant {
+            box-shadow: 0 10px 40px -10px hsl(199 89% 48% / 0.15);
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            transition: all 0.3s;
+            cursor: pointer;
+            border: none;
+            font-family: 'Inter', sans-serif;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid hsl(var(--color-border));
+            color: hsl(var(--color-foreground));
+        }
+
+        .btn-outline:hover {
+            background: hsl(var(--color-muted));
+        }
+
+        .spinner {
+            border: 3px solid hsl(var(--color-muted));
+            border-top-color: hsl(var(--color-primary));
+            border-radius: 50%;
+            width: 3rem;
+            height: 3rem;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .animate-slide-up {
+            animation: slideUp 0.4s ease-out;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .alert-warning {
+            background: hsl(45 93% 47% / 0.1);
+            color: hsl(45 93% 47%);
+            border: 1px solid hsl(45 93% 47% / 0.2);
+        }
+
+        .alert-danger {
+            background: hsl(0 84% 60% / 0.1);
+            color: hsl(0 84% 60%);
+            border: 1px solid hsl(0 84% 60% / 0.2);
+        }
+
+        header {
+            background: hsl(var(--color-card) / 0.95);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid hsl(var(--color-border) / 0.5);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 5rem 1rem;
+        }
+
+        .empty-icon {
+            width: 5rem;
+            height: 5rem;
+            border-radius: 9999px;
+            background: hsl(var(--color-muted));
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            color: hsl(var(--color-muted-foreground));
+        }
+
+        .table-container {
+            background: white;
+            border-radius: 0.75rem;
+            overflow: hidden;
+            box-shadow: 0 10px 40px -10px hsl(199 89% 48% / 0.15);
+            border: 1px solid hsl(var(--color-border) / 0.5);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: linear-gradient(135deg, hsl(199 89% 48%), hsl(174 72% 56%));
+            color: white;
+        }
+
+        thead th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid hsl(var(--color-border));
+            transition: background-color 0.2s;
+        }
+
+        tbody tr:hover {
+            background-color: hsl(var(--color-muted) / 0.5);
+        }
+
+        tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        tbody td {
+            padding: 1rem;
+            font-size: 0.875rem;
+        }
+
+        .id-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 2rem;
+            height: 2rem;
+            border-radius: 0.375rem;
+            background: hsl(var(--color-muted));
+            color: hsl(var(--color-foreground));
+            font-weight: 600;
+            font-size: 0.75rem;
+        }
+
+        .valor-cell {
+            color: hsl(var(--color-success));
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .table-container {
+                overflow-x: auto;
+            }
+
+            table {
+                min-width: 600px;
+            }
+
+            thead th, tbody td {
+                padding: 0.75rem 0.5rem;
+                font-size: 0.813rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<!-- Header -->
+<header>
+    <div style="max-width: 1280px; margin: 0 auto; padding: 1.5rem;">
+        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                <div class="gradient-primary" style="width: 3rem; height: 3rem; border-radius: 0.75rem; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 40px -10px hsl(199 89% 48% / 0.15);">
+                    <i data-lucide="receipt" style="width: 1.5rem; height: 1.5rem; color: white;"></i>
+                </div>
+                <div>
+                    <h1 class="gradient-text" style="font-size: 1.875rem; font-weight: 700; margin: 0;">
+                        Histórico de Vendas
+                    </h1>
+                    <p style="color: hsl(var(--color-muted-foreground)); font-size: 0.875rem; margin: 0;">
+                        Visualize todas as vendas registradas
+                    </p>
+                </div>
+            </div>
+
+            <button class="btn btn-outline" onclick="window.location.href='vendedores.html'">
+                <i data-lucide="arrow-left" style="width: 1rem; height: 1rem;"></i>
+                Voltar aos Vendedores
+            </button>
+        </div>
+    </div>
+</header>
+
+<!-- Main Content -->
+<main style="max-width: 1280px; margin: 0 auto; padding: 2rem;">
+    <!-- Loading State -->
+    <div id="loading" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 5rem 1rem;">
+        <div class="spinner"></div>
+        <p style="margin-top: 1rem; color: hsl(var(--color-muted-foreground));">Carregando histórico de vendas...</p>
+    </div>
+
+    <!-- Empty State -->
+    <div id="emptyState" style="display: none;">
+        <div class="empty-state animate-slide-up">
+            <div class="empty-icon">
+                <i data-lucide="alert-triangle" style="width: 2.5rem; height: 2.5rem;"></i>
+            </div>
+            <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem;">Nenhuma venda registrada</h3>
+            <p style="color: hsl(var(--color-muted-foreground)); margin-bottom: 1.5rem;">
+                Ainda não há vendas no sistema
+            </p>
+        </div>
+    </div>
+
+    <!-- Error State -->
+    <div id="errorState" style="display: none;">
+        <div class="alert alert-danger">
+            <i data-lucide="x-circle" style="width: 1.25rem; height: 1.25rem;"></i>
+            <span>Erro ao carregar histórico de vendas. Verifique se a API está rodando em <strong>localhost:8080</strong>.</span>
+        </div>
+    </div>
+
+    <!-- Table -->
+    <div id="tableContainer" style="display: none;" class="animate-slide-up">
+        <div class="table-container">
+            <table>
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Vendedor</th>
+                    <th>Veículo</th>
+                    <th>Valor (R$)</th>
+                    <th>Data da Venda</th>
+                </tr>
+                </thead>
+                <tbody id="vendasTbody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+
+<script>
+    const API_URL = 'http://localhost:8080/api/vendas';
+
+    lucide.createIcons();
+    document.addEventListener('DOMContentLoaded', carregarVendas);
+
+    async function carregarVendas() {
+        const loading = document.getElementById('loading');
+        const emptyState = document.getElementById('emptyState');
+        const errorState = document.getElementById('errorState');
+        const tableContainer = document.getElementById('tableContainer');
+        const tbody = document.getElementById('vendasTbody');
+
+        loading.style.display = 'flex';
+        emptyState.style.display = 'none';
+        errorState.style.display = 'none';
+        tableContainer.style.display = 'none';
+        tbody.innerHTML = '';
+
+        try {
+            const response = await fetch(API_URL);
+
+            if (!response.ok) {
+                throw new Error(`Erro HTTP: ${response.status}`);
+            }
+
+            const vendas = await response.json();
+            loading.style.display = 'none';
+
+            if (vendas.length === 0) {
+                emptyState.style.display = 'block';
+                lucide.createIcons();
+                return;
+            }
+
+            tableContainer.style.display = 'block';
+
+            tbody.innerHTML = vendas.map((venda, index) => {
+                const vendedorNome = venda.vendedorNome || 'N/A';
+                const veiculoModelo = venda.veiculoModelo || 'N/A';
+
+                const valorNumerico = parseFloat(venda.valorFinal);
+                let valorFormatado;
+
+                if (isNaN(valorNumerico) || valorNumerico === null) {
+                    valorFormatado = 'R$ 0,00';
+                } else {
+                    valorFormatado = new Intl.NumberFormat('pt-BR', {
+                        style: 'currency',
+                        currency: 'BRL'
+                    }).format(valorNumerico);
+                }
+
+                const dataFormatada = new Date(venda.dataVenda).toLocaleDateString('pt-BR', { timeZone: 'UTC' });
+
+                return `
+                    <tr style="animation-delay: ${index * 0.05}s;">
+                        <td>
+                            <span class="id-badge">${venda.id}</span>
+                        </td>
+                        <td>
+                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                <i data-lucide="user" style="width: 1rem; height: 1rem; color: hsl(var(--color-muted-foreground));"></i>
+                                <span style="font-weight: 500;">${vendedorNome}</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                <i data-lucide="car" style="width: 1rem; height: 1rem; color: hsl(var(--color-muted-foreground));"></i>
+                                <span>${veiculoModelo}</span>
+                            </div>
+                        </td>
+                        <td class="valor-cell">${valorFormatado}</td>
+                        <td>
+                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                <i data-lucide="calendar" style="width: 1rem; height: 1rem; color: hsl(var(--color-muted-foreground));"></i>
+                                <span>${dataFormatada}</span>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            lucide.createIcons();
+        } catch (error) {
+            console.error('Erro ao carregar vendas:', error);
+            loading.style.display = 'none';
+            errorState.style.display = 'block';
+            lucide.createIcons();
+        }
+    }
+</script>
+</body>
+</html>

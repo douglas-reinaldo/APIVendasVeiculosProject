@@ -36,8 +36,8 @@ public class VeiculoService {
         veiculo.setMarca(veiculoInputDTO.getMarca());
         veiculo.setModelo(veiculoInputDTO.getModelo());
         veiculo.setPreco(veiculoInputDTO.getPreco());
-        veiculo.setVendido(veiculoInputDTO.getVendido());
-
+        veiculo.setPlaca(veiculoInputDTO.getPlaca());
+        veiculo.setVendido(false);
         veiculo.setVendedor(vendedor);
 
         Veiculo salvo = _veiculoRepository.save(veiculo);
@@ -71,7 +71,7 @@ public class VeiculoService {
                     veiculoExistente.setModelo(dto.getModelo());
                     veiculoExistente.setAno(dto.getAno());
                     veiculoExistente.setPreco(dto.getPreco());
-                    veiculoExistente.setVendido(dto.getVendido());
+                    veiculoExistente.setPlaca(dto.getPlaca());
 
                     Veiculo salvo = _veiculoRepository.save(veiculoExistente);
 
@@ -98,6 +98,7 @@ public class VeiculoService {
         dto.setAno(veiculo.getAno());
         dto.setPreco(veiculo.getPreco());
         dto.setVendido(veiculo.getVendido());
+        dto.setPlaca(veiculo.getPlaca());
 
         return dto;
     }
