@@ -21,55 +21,90 @@ public class VendedorService {
     @Autowired
     private VeiculoService veiculoService;
 
-    public List<VendedorListagemDTO> ListarVendedores()
+    public void validarId(Long id)
+    {
+        if (id == null || id <= 0) {
+            throw ApiException.badRequest("O ID do vendedor deve ser um valor positivo e não pode ser nulo.");
+        }
+    }
+
+    public List<VendedorListagemDTO> listarVendedores()
     {
         return vendedorRepository.findAll()
                 .stream()
-                .map(this::MapearParaListagemDTO)
+                .map(this::mapearParaListagemDTO)
                 .toList();
     }
 
-    public Optional<VendedorDetalhesDTO> BuscarVendedorPorId(Long id)
+    public Optional<VendedorDetalhesDTO> buscarVendedorPorId(Long id)
     {
+        validarId(id);
         return vendedorRepository.findById(id)
-                .map(this::MapearParaDetalhesDTO);
+                .map(this::mapearParaDetalhesDTO);
     }
 
     public Optional<Vendedor> BuscarVendedorEntidade(Long id)
     {
+        validarId(id);
         return vendedorRepository.findById(id);
     }
 
     public VendedorListagemDTO salvar(VendedorInputDTO vendedor)
     {
-        Vendedor vendedorSalvo = MapearParaEntidade(vendedor);
+        if (vendedor == null) {
+            throw ApiException.badRequest("Objeto vendedor não pode ser nulo.");
+        }
+
+        Vendedor vendedorSalvo = mapearParaEntidade(vendedor);
+        if (vendedorRepository.existsByEmail(vendedor.getEmail())) {
+            throw ApiException.conflict("O Email '" + vendedor.getEmail() + "' já está cadastrado");
+        }
+
+        if (vendedorRepository.existsByTelefone(vendedor.getTelefone())) {
+            throw ApiException.conflict("O Telefone '" + vendedor.getTelefone() + "' já está cadastrado");
+        }
         vendedorRepository.save(vendedorSalvo);
-        return MapearParaListagemDTO(vendedorSalvo);
+        return mapearParaListagemDTO(vendedorSalvo);
     }
 
     public Optional<VendedorListagemDTO> atualizar(Long id, VendedorInputDTO vendedor) {
+        if (vendedor == null) {
+           throw ApiException.badRequest("Objeto vendedor não pode ser nulo.");
+        }
+
+        validarId(id);
 
         return vendedorRepository.findById(id)
                 .map(vendedorExistente -> {
 
+                    if (!vendedorExistente.getEmail().equals(vendedor.getEmail()) &&
+                            vendedorRepository.existsByEmailAndIdNot(vendedor.getEmail(), id)) {
+                        throw ApiException.conflict("O novo e-mail já está em uso por outro vendedor.");
+                    }
+
+                    if (!vendedorExistente.getTelefone().equals(vendedor.getTelefone()) &&
+                            vendedorRepository.existsByTelefoneAndIdNot(vendedor.getTelefone(), id)) {
+                        throw ApiException.conflict("O novo telefone já está em uso por outro vendedor.");
+                    }
                     vendedorExistente.setNome(vendedor.getNome());
                     vendedorExistente.setEmail(vendedor.getEmail());
                     vendedorExistente.setTelefone(vendedor.getTelefone());
 
                     Vendedor salvo = vendedorRepository.save(vendedorExistente);
 
-                    return MapearParaListagemDTO(salvo);
+                    return mapearParaListagemDTO(salvo);
                 });
     }
 
 
-    public boolean DeletarVendedorPorId(Long id)
-    {
+    public boolean deletarVendedorPorId(Long id) {
+
+        validarId(id);
+
         Vendedor vendedor = vendedorRepository.findById(id)
                 .orElseThrow(() -> ApiException.notFound("Vendedor", id));
 
-        if (!vendedor.getVeiculos().isEmpty())
-        {
+        if (!vendedor.getVeiculos().isEmpty()) {
             throw ApiException.conflict("Não foi possivel deletar vendedor com veiculos cadastrados.");
         }
 
@@ -77,15 +112,17 @@ public class VendedorService {
         return true;
     }
 
-    public List<VeiculoDTO> ListarVeiculos(long id)
+    public List<VeiculoDTO> listarVeiculos(Long id)
     {
+        validarId(id);
+
         return vendedorRepository.findById(id)
-                .map(this::MapearParaDetalhesDTO)
+                .map(this::mapearParaDetalhesDTO)
                 .map(VendedorDetalhesDTO::getVeiculos)
                 .orElse(Collections.emptyList());
     }
 
-    private VendedorListagemDTO MapearParaListagemDTO(Vendedor vendedor)
+    private VendedorListagemDTO mapearParaListagemDTO(Vendedor vendedor)
     {
         VendedorListagemDTO vendedorDTO = new VendedorListagemDTO();
         vendedorDTO.setNome(vendedor.getNome());
@@ -96,7 +133,7 @@ public class VendedorService {
         return vendedorDTO;
     }
 
-    private VendedorDetalhesDTO MapearParaDetalhesDTO(Vendedor vendedor)
+    private VendedorDetalhesDTO mapearParaDetalhesDTO(Vendedor vendedor)
     {
         VendedorDetalhesDTO vendedorDTO = new VendedorDetalhesDTO();
         vendedorDTO.setNome(vendedor.getNome());
@@ -113,7 +150,7 @@ public class VendedorService {
         return vendedorDTO;
     }
 
-    protected Vendedor MapearParaEntidade(VendedorInputDTO dto)
+    protected Vendedor mapearParaEntidade(VendedorInputDTO dto)
     {
         Vendedor vendedor = new Vendedor();
         vendedor.setNome(dto.getNome());
@@ -121,8 +158,5 @@ public class VendedorService {
         vendedor.setTelefone(dto.getTelefone());
         return vendedor;
     }
-
-
-
 
 }

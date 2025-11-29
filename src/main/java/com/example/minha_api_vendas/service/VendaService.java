@@ -1,9 +1,6 @@
 package com.example.minha_api_vendas.service;
-
-import com.example.minha_api_vendas.dto.veiculo.VeiculoDTO;
 import com.example.minha_api_vendas.dto.venda.VendaInputDTO;
 import com.example.minha_api_vendas.dto.venda.VendaOutputDTO;
-import com.example.minha_api_vendas.dto.vendedor.VendedorDetalhesDTO;
 import com.example.minha_api_vendas.exception.ApiException;
 import com.example.minha_api_vendas.model.Veiculo;
 import com.example.minha_api_vendas.model.Venda;
@@ -12,7 +9,6 @@ import com.example.minha_api_vendas.repository.VeiculoRepository;
 import com.example.minha_api_vendas.repository.VendaRepository;
 import com.example.minha_api_vendas.repository.VendedorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
