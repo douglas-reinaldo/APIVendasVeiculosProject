@@ -6,15 +6,12 @@
     <title>Sistema de Gestão de Vendedores</title>
     <meta name="description" content="Plataforma moderna para gerenciamento de vendedores e veículos" />
 
-    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
 
     <style>
@@ -316,7 +313,6 @@
     </style>
 </head>
 <body>
-<!-- Header -->
 <header>
     <div style="max-width: 1280px; margin: 0 auto; padding: 1.5rem;">
         <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
@@ -348,15 +344,12 @@
     </div>
 </header>
 
-<!-- Main Content -->
 <main style="max-width: 1280px; margin: 0 auto; padding: 2rem;">
-    <!-- Loading State -->
     <div id="loading" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 5rem 1rem;">
         <div class="spinner"></div>
         <p style="margin-top: 1rem; color: hsl(var(--color-muted-foreground));">Carregando vendedores...</p>
     </div>
 
-    <!-- Empty State -->
     <div id="emptyState" style="display: none;">
         <div class="empty-state animate-slide-up">
             <div class="empty-icon">
@@ -373,7 +366,6 @@
         </div>
     </div>
 
-    <!-- Error State -->
     <div id="errorState" style="display: none;">
         <div class="alert alert-danger">
             <i data-lucide="x-circle" style="width: 1.25rem; height: 1.25rem;"></i>
@@ -381,11 +373,9 @@
         </div>
     </div>
 
-    <!-- Vendedores Grid -->
     <div id="vendedoresContainer" class="grid"></div>
 </main>
 
-<!-- Modal -->
 <div id="modal" class="modal">
     <div class="modal-content">
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem;">
@@ -466,7 +456,12 @@
                 return;
             }
 
-            container.innerHTML = vendedores.map((v, index) => `
+            container.innerHTML = vendedores.map((v, index) => {
+                // *** Alteração: Usando 'numeroVeiculos' conforme solicitado e tratando pluralização ***
+                const numVeiculos = v.numeroVeiculos || 0;
+                const plural = numVeiculos !== 1 ? 's' : '';
+
+                return `
                 <div class="card animate-slide-up" style="padding: 1.5rem; animation-delay: ${index * 0.1}s;">
                     <div style="display: flex; align-items: start; justify-content: space-between; margin-bottom: 1rem;">
                         <div style="display: flex; align-items: center; gap: 0.75rem;">
@@ -492,7 +487,7 @@
                     <div style="display: flex; align-items: center; justify-content: space-between;">
                         <span class="badge">
                             <i data-lucide="car" style="width: 0.875rem; height: 0.875rem;"></i>
-                            ${v.veiculosDisponiveis || 0} Veículos
+                            ${numVeiculos} Veículo${plural}
                         </span>
 
                         <div style="display: flex; gap: 0.5rem;">
@@ -509,7 +504,8 @@
                         </div>
                     </div>
                 </div>
-            `).join('');
+            `;
+            }).join('');
 
             lucide.createIcons();
         } catch (error) {

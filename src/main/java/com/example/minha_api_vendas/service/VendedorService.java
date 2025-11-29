@@ -4,6 +4,7 @@ import com.example.minha_api_vendas.dto.veiculo.VeiculoDTO;
 import com.example.minha_api_vendas.dto.vendedor.VendedorDetalhesDTO;
 import com.example.minha_api_vendas.dto.vendedor.VendedorInputDTO;
 import com.example.minha_api_vendas.dto.vendedor.VendedorListagemDTO;
+import com.example.minha_api_vendas.exception.ApiException;
 import com.example.minha_api_vendas.model.Vendedor;
 import com.example.minha_api_vendas.repository.VendedorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,14 +16,14 @@ import java.util.Optional;
 @Service
 public class VendedorService {
     @Autowired
-    private VendedorRepository _vendedorRepository;
+    private VendedorRepository vendedorRepository;
 
     @Autowired
-    private VeiculoService _veiculoService;
+    private VeiculoService veiculoService;
 
     public List<VendedorListagemDTO> ListarVendedores()
     {
-        return _vendedorRepository.findAll()
+        return vendedorRepository.findAll()
                 .stream()
                 .map(this::MapearParaListagemDTO)
                 .toList();
@@ -30,32 +31,32 @@ public class VendedorService {
 
     public Optional<VendedorDetalhesDTO> BuscarVendedorPorId(Long id)
     {
-        return _vendedorRepository.findById(id)
+        return vendedorRepository.findById(id)
                 .map(this::MapearParaDetalhesDTO);
     }
 
     public Optional<Vendedor> BuscarVendedorEntidade(Long id)
     {
-        return _vendedorRepository.findById(id);
+        return vendedorRepository.findById(id);
     }
 
     public VendedorListagemDTO salvar(VendedorInputDTO vendedor)
     {
         Vendedor vendedorSalvo = MapearParaEntidade(vendedor);
-        _vendedorRepository.save(vendedorSalvo);
+        vendedorRepository.save(vendedorSalvo);
         return MapearParaListagemDTO(vendedorSalvo);
     }
 
     public Optional<VendedorListagemDTO> atualizar(Long id, VendedorInputDTO vendedor) {
 
-        return _vendedorRepository.findById(id)
+        return vendedorRepository.findById(id)
                 .map(vendedorExistente -> {
 
                     vendedorExistente.setNome(vendedor.getNome());
                     vendedorExistente.setEmail(vendedor.getEmail());
                     vendedorExistente.setTelefone(vendedor.getTelefone());
 
-                    Vendedor salvo = _vendedorRepository.save(vendedorExistente);
+                    Vendedor salvo = vendedorRepository.save(vendedorExistente);
 
                     return MapearParaListagemDTO(salvo);
                 });
@@ -64,16 +65,21 @@ public class VendedorService {
 
     public boolean DeletarVendedorPorId(Long id)
     {
-        if (_vendedorRepository.existsById(id)) {
-            _vendedorRepository.deleteById(id);
-            return true;
+        Vendedor vendedor = vendedorRepository.findById(id)
+                .orElseThrow(() -> ApiException.notFound("Vendedor", id));
+
+        if (!vendedor.getVeiculos().isEmpty())
+        {
+            throw ApiException.conflict("Não foi possivel deletar vendedor com veiculos cadastrados.");
         }
-        return false;
+
+        vendedorRepository.deleteById(id);
+        return true;
     }
 
     public List<VeiculoDTO> ListarVeiculos(long id)
     {
-        return _vendedorRepository.findById(id)
+        return vendedorRepository.findById(id)
                 .map(this::MapearParaDetalhesDTO)
                 .map(VendedorDetalhesDTO::getVeiculos)
                 .orElse(Collections.emptyList());
@@ -86,6 +92,7 @@ public class VendedorService {
         vendedorDTO.setEmail(vendedor.getEmail());
         vendedorDTO.setTelefone(vendedor.getTelefone());
         vendedorDTO.setId(vendedor.getId());
+        vendedorDTO.setNumeroVeiculos(vendedor.getVeiculos().size());
         return vendedorDTO;
     }
 
@@ -99,7 +106,7 @@ public class VendedorService {
 
         List<VeiculoDTO> veiculoDTOS = vendedor.getVeiculos()
                 .stream()
-                .map(v -> _veiculoService.MapearParaDTO(v))
+                .map(v -> veiculoService.mapearParaDTO(v))
                 .toList();
 
         vendedorDTO.setVeiculos(veiculoDTOS);

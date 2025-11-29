@@ -8,4 +8,5 @@ public class VendedorListagemDTO {
     private String nome;
     private String email;
     private String telefone;
+    private int numeroVeiculos;
 }

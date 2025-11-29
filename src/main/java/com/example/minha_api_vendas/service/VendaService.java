@@ -4,6 +4,7 @@ import com.example.minha_api_vendas.dto.veiculo.VeiculoDTO;
 import com.example.minha_api_vendas.dto.venda.VendaInputDTO;
 import com.example.minha_api_vendas.dto.venda.VendaOutputDTO;
 import com.example.minha_api_vendas.dto.vendedor.VendedorDetalhesDTO;
+import com.example.minha_api_vendas.exception.ApiException;
 import com.example.minha_api_vendas.model.Veiculo;
 import com.example.minha_api_vendas.model.Venda;
 import com.example.minha_api_vendas.model.Vendedor;
@@ -32,11 +33,16 @@ public class VendaService {
 
     public VendaOutputDTO RegistrarVenda(VendaInputDTO  vendaInputDTO) throws Exception {
         Vendedor vendedor = _vendedorRepository.findById(vendaInputDTO.getVendedorId())
-                .orElseThrow(ChangeSetPersister.NotFoundException::new);
+                .orElseThrow(() -> ApiException.notFound("Vendedor", vendaInputDTO.getVendedorId()));
 
         Veiculo veiculo = _veiculoRepository.findById(vendaInputDTO.getVeiculoId())
-                .orElseThrow(ChangeSetPersister.NotFoundException::new);
+                .orElseThrow(() -> ApiException.notFound("Veiculo", vendaInputDTO.getVeiculoId()));
 
+
+        if (veiculo.getVendido())
+        {
+            throw ApiException.badRequest("Esse veiculo já foi vendido");
+        }
 
         Venda venda = new Venda();
         venda.setVendedor(vendedor);

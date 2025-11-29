@@ -2,14 +2,13 @@ package com.example.minha_api_vendas.service;
 
 import com.example.minha_api_vendas.dto.veiculo.VeiculoInputDTO;
 import com.example.minha_api_vendas.dto.veiculo.VeiculoDTO;
+import com.example.minha_api_vendas.exception.ApiException;
 import com.example.minha_api_vendas.model.Veiculo;
 import com.example.minha_api_vendas.model.Vendedor;
 import com.example.minha_api_vendas.repository.VeiculoRepository;
 import com.example.minha_api_vendas.repository.VendedorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
@@ -27,9 +26,7 @@ public class VeiculoService {
     public VeiculoDTO Salvar(VeiculoInputDTO veiculoInputDTO) {
 
         Vendedor vendedor = _vendedorRepository.findById(veiculoInputDTO.getVendedorId())
-                .orElseThrow(() ->
-                        new ResponseStatusException(HttpStatus.NOT_FOUND, "Vendedor não encontrado")
-                );
+                .orElseThrow(() -> ApiException.notFound("Vendedor", veiculoInputDTO.getVendedorId()));
 
         Veiculo veiculo = new Veiculo();
         veiculo.setAno(veiculoInputDTO.getAno());
@@ -42,28 +39,24 @@ public class VeiculoService {
 
         Veiculo salvo = _veiculoRepository.save(veiculo);
 
-        return MapearParaDTO(salvo);
+        return mapearParaDTO(salvo);
     }
-
-
-
-
 
     public List<VeiculoDTO> ListarVeiculos()
     {
         return _veiculoRepository.findAll().stream()
-                .map(this::MapearParaDTO)
+                .map(this::mapearParaDTO)
                 .collect(Collectors.toList());
 
     }
 
-    public Optional<VeiculoDTO> BuscarVeiculoPorId(Long id)
+    public Optional<VeiculoDTO> buscarVeiculoPorId(Long id)
     {
         return _veiculoRepository.findById(id)
-                .map(this::MapearParaDTO);
+                .map(this::mapearParaDTO);
     }
 
-    public Optional<VeiculoDTO> Atualizar(long id, VeiculoInputDTO dto) {
+    public Optional<VeiculoDTO> atualizar(long id, VeiculoInputDTO dto) {
 
         return _veiculoRepository.findById(id)
                 .map(veiculoExistente -> {
@@ -75,22 +68,22 @@ public class VeiculoService {
 
                     Veiculo salvo = _veiculoRepository.save(veiculoExistente);
 
-                    return MapearParaDTO(salvo);
+                    return mapearParaDTO(salvo);
                 });
     }
 
 
-    public boolean DeletarVeiculoPorId(Long id)
+    public boolean deletarVeiculoPorId(Long id)
     {
         if (_veiculoRepository.existsById(id))
         {
             _veiculoRepository.deleteById(id);
             return true;
         }
-        return false;
+        throw ApiException.notFound("Veiculo", id);
     }
 
-    protected VeiculoDTO MapearParaDTO(Veiculo veiculo) {
+    protected VeiculoDTO mapearParaDTO(Veiculo veiculo) {
         VeiculoDTO dto = new VeiculoDTO();
         dto.setId(veiculo.getId());
         dto.setMarca(veiculo.getMarca());

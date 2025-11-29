@@ -16,7 +16,7 @@ public class VeiculoInputDTO {
     @Size(min = 2, max = 50)
     private String modelo;
 
-    @NotNull(message = "")
+    @NotNull(message = "Ano é obrigatorio")
     @Min(value = 1900, message = "Ano deve ser maior que 1900")
     private Integer ano;
 
