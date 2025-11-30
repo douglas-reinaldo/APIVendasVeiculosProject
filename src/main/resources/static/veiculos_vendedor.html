@@ -6,15 +6,12 @@
     <title>Veículos do Vendedor - Sistema de Gestão</title>
     <meta name="description" content="Gerencie os veículos de um vendedor específico" />
 
-    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
 
     <style>
@@ -338,7 +335,6 @@
     </style>
 </head>
 <body>
-<!-- Header -->
 <header>
     <div style="max-width: 1280px; margin: 0 auto; padding: 1.5rem;">
         <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
@@ -370,15 +366,12 @@
     </div>
 </header>
 
-<!-- Main Content -->
 <main style="max-width: 1280px; margin: 0 auto; padding: 2rem;">
-    <!-- Loading State -->
     <div id="loading" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 5rem 1rem;">
         <div class="spinner"></div>
         <p style="margin-top: 1rem; color: hsl(var(--color-muted-foreground));">Carregando veículos...</p>
     </div>
 
-    <!-- Empty State -->
     <div id="emptyState" style="display: none;">
         <div class="empty-state animate-slide-up">
             <div class="empty-icon">
@@ -395,7 +388,6 @@
         </div>
     </div>
 
-    <!-- Error State -->
     <div id="errorState" style="display: none;">
         <div class="alert alert-danger">
             <i data-lucide="x-circle" style="width: 1.25rem; height: 1.25rem;"></i>
@@ -403,11 +395,9 @@
         </div>
     </div>
 
-    <!-- Veículos Grid -->
     <div id="veiculosContainer" class="grid"></div>
 </main>
 
-<!-- Modal -->
 <div id="modal" class="modal">
     <div class="modal-content">
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem;">
@@ -451,6 +441,15 @@
                 <input type="text" id="placa" class="input" placeholder="ABC-1234" required>
             </div>
 
+            <div id="vendedorIdContainer" style="margin-bottom: 1.5rem; display: none;">
+                <label for="vendedorIdInput" style="display: block; margin-bottom: 0.5rem; font-weight: 500;">
+                    ID do Vendedor Associado *
+                </label>
+                <input type="number" id="vendedorIdInput" class="input" placeholder="ID do novo vendedor (Ex: 5)">
+                <p style="font-size: 0.75rem; color: hsl(var(--color-muted-foreground)); margin-top: 0.25rem;">
+                    Use este campo para **transferir** o veículo para outro vendedor.
+                </p>
+            </div>
             <div id="feedback" style="margin-bottom: 1rem;"></div>
 
             <div style="display: flex; gap: 0.75rem;">
@@ -594,6 +593,10 @@
         const submitText = document.getElementById('submitText');
         const feedback = document.getElementById('feedback');
 
+        // Elementos do novo campo de Vendedor ID
+        const vendedorIdContainer = document.getElementById('vendedorIdContainer');
+        const vendedorIdInput = document.getElementById('vendedorIdInput');
+
         form.reset();
         feedback.innerHTML = '';
 
@@ -608,11 +611,22 @@
             document.getElementById('preco').value = veiculo.preco;
             document.getElementById('placa').value = veiculo.placa;
             document.getElementById('placa').disabled = true;
+
+            // Lógica de Edição (Transferência de Vendedor)
+            vendedorIdContainer.style.display = 'block';
+            vendedorIdInput.value = veiculo.vendedorId; // Assumindo que o VeiculoDTO retorna vendedorId
+            vendedorIdInput.required = true;
+
         } else {
             modalTitle.textContent = 'Cadastrar Novo Veículo';
             modalDescription.textContent = 'Preencha os dados do veículo.';
             submitText.textContent = 'Cadastrar';
             document.getElementById('placa').disabled = false;
+
+            // Lógica de Cadastro
+            vendedorIdContainer.style.display = 'none';
+            vendedorIdInput.value = '';
+            vendedorIdInput.required = false;
         }
 
         modal.classList.add('active');
@@ -652,13 +666,24 @@
         const method = veiculoId ? 'PUT' : 'POST';
         const url = veiculoId ? `${API_URL_VEICULOS}/${veiculoId}` : API_URL_VEICULOS;
 
+        // NOVO: Determinar o ID do Vendedor a ser enviado
+        let finalVendedorId;
+        if (veiculoId) {
+            // Se for EDIÇÃO (PUT), pega o ID do campo de input (pode ter sido alterado)
+            finalVendedorId = parseInt(document.getElementById('vendedorIdInput').value);
+        } else {
+            // Se for CADASTRO (POST), usa o ID do vendedor da página (vendedorId global)
+            finalVendedorId = parseInt(vendedorId);
+        }
+
         const data = {
             marca: document.getElementById('marca').value,
             modelo: document.getElementById('modelo').value,
             ano: parseInt(document.getElementById('ano').value),
+            // O parseFloat é aceitável, pois o Spring/Jackson irá converter para BigDecimal no backend
             preco: parseFloat(document.getElementById('preco').value),
             placa: document.getElementById('placa').value,
-            vendedorId: parseInt(vendedorId)
+            vendedorId: finalVendedorId // ID correto para transferência/criação
         };
 
         try {
@@ -690,7 +715,17 @@
                 `;
                 lucide.createIcons();
             } else {
-                throw new Error('Erro ao salvar');
+                // Tenta ler a mensagem de erro detalhada da API se houver (opcional)
+                const errorBody = await response.text();
+                console.error('Erro da API:', errorBody);
+
+                feedback.innerHTML = `
+                    <div class="alert alert-danger">
+                        <i data-lucide="wifi-off" style="width: 1.25rem; height: 1.25rem;"></i>
+                        <span>Erro ao salvar. Detalhes: ${response.status} (${errorBody.substring(0, 50)}...)</span>
+                    </div>
+                `;
+                lucide.createIcons();
             }
         } catch (error) {
             feedback.innerHTML = `

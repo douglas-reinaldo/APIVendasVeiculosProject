@@ -5,6 +5,8 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 import jakarta.validation.constraints.*;
 
+import java.math.BigDecimal;
+
 @Data
 public class VeiculoInputDTO {
 
@@ -22,7 +24,7 @@ public class VeiculoInputDTO {
 
     @NotNull(message = "Preço é obrigatorio")
     @Positive(message = "O preço deve ser maior que zero")
-    private Double preco;
+    private BigDecimal preco;
 
     @NotBlank(message = "Placa é obrigatoria")
     @Pattern(regexp = "^[A-Z]{3}-\\d{4}$|^[A-Z]{3}\\d[A-Z]\\d{2}$",

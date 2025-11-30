@@ -3,6 +3,7 @@ package com.example.minha_api_vendas.model;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
@@ -22,5 +23,5 @@ public class Venda {
     private Vendedor vendedor;
 
     private LocalDate dataVenda;
-    private Double valorFinal;
+    private BigDecimal valorFinal;
 }

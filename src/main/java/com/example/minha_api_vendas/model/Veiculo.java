@@ -1,10 +1,11 @@
 package com.example.minha_api_vendas.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.Data;
+
+import java.math.BigDecimal;
 
 
 @Entity
@@ -32,7 +33,7 @@ public class Veiculo {
     @NotNull(message = "O preço é obrigatorio")
     @Positive(message = "O preço deve ser positivo")
     @Column(nullable = false, precision = 10, scale = 2)
-    private Double preco;
+    private BigDecimal preco;
 
     @NotNull(message = "O status da venda deve ser definido")
     @Column(nullable = false)

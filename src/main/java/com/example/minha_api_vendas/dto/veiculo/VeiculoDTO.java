@@ -2,6 +2,8 @@ package com.example.minha_api_vendas.dto.veiculo;
 
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 @Data
 public class VeiculoDTO {
 
@@ -9,7 +11,7 @@ public class VeiculoDTO {
     private String marca;
     private String modelo;
     private int ano;
-    private Double preco;
+    private BigDecimal preco;
     private String placa;
     private Boolean vendido;
 }

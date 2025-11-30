@@ -7,5 +7,6 @@ import java.util.List;
 
 
 public interface VeiculoRepository extends JpaRepository<Veiculo, Long> {
-
+    boolean existsByPlaca(String placa);
+    boolean existsByPlacaAndIdNot(String placa, Long id);
 }

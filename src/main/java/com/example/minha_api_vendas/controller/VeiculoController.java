@@ -18,42 +18,39 @@ import java.util.List;
 public class VeiculoController {
 
     @Autowired
-    private VeiculoService _veiculoService;
+    private VeiculoService veiculoService;
 
     @GetMapping
-    public List<VeiculoDTO> ListarVeiculos()
+    public List<VeiculoDTO> listarVeiculos()
     {
-        return _veiculoService.ListarVeiculos();
+        return veiculoService.ListarVeiculos();
     }
 
     @PostMapping
     public ResponseEntity<VeiculoDTO> criarVeiculo(@Valid @RequestBody VeiculoInputDTO veiculoInputDTO) {
-        try {
-            VeiculoDTO novoVeiculo = _veiculoService.Salvar(veiculoInputDTO);
-            return ResponseEntity.status(HttpStatus.CREATED).body(novoVeiculo);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+        VeiculoDTO novoVeiculo = veiculoService.salvar(veiculoInputDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(novoVeiculo);
+
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<VeiculoDTO> buscarPorId(@PathVariable Long id)
     {
-        return _veiculoService.buscarVeiculoPorId(id)
+        return veiculoService.buscarVeiculoPorId(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<VeiculoDTO> atualizarVeiculo(@PathVariable Long id, @Valid @RequestBody VeiculoInputDTO veiculoInputDTO) {
-        return _veiculoService.atualizar(id, veiculoInputDTO)
+        return veiculoService.atualizar(id, veiculoInputDTO)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletarVeiculo(@PathVariable Long id) {
-        if (_veiculoService.deletarVeiculoPorId(id)) {
+        if (veiculoService.deletarVeiculoPorId(id)) {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.notFound().build();

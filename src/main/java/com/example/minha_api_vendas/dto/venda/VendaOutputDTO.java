@@ -3,6 +3,7 @@ package com.example.minha_api_vendas.dto.venda;
 import com.example.minha_api_vendas.model.Venda;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.time.*;
 
 @Data
@@ -11,7 +12,7 @@ public class VendaOutputDTO {
     private String veiculoModelo;
     private String vendedorNome;
     private LocalDate dataVenda;
-    private Double valorFinal;
+    private BigDecimal valorFinal;
 
     public VendaOutputDTO(Venda venda) {
         this.id = venda.getId();

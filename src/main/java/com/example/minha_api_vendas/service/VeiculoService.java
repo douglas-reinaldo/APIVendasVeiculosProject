@@ -9,6 +9,7 @@ import com.example.minha_api_vendas.repository.VeiculoRepository;
 import com.example.minha_api_vendas.repository.VendedorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import java.math.BigDecimal;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,7 +24,18 @@ public class VeiculoService {
     @Autowired
     private VendedorRepository _vendedorRepository;
 
-    public VeiculoDTO Salvar(VeiculoInputDTO veiculoInputDTO) {
+    public void validarId(Long id)
+    {
+        if (id == null || id <= 0) {
+            throw ApiException.badRequest("O ID do vendedor deve ser um valor positivo e não pode ser nulo.");
+        }
+    }
+
+    public VeiculoDTO salvar(VeiculoInputDTO veiculoInputDTO) {
+
+        if (veiculoInputDTO == null){
+            throw ApiException.badRequest("O veiculo não pode ser nulo");
+        }
 
         Vendedor vendedor = _vendedorRepository.findById(veiculoInputDTO.getVendedorId())
                 .orElseThrow(() -> ApiException.notFound("Vendedor", veiculoInputDTO.getVendedorId()));
@@ -33,6 +45,10 @@ public class VeiculoService {
         veiculo.setMarca(veiculoInputDTO.getMarca());
         veiculo.setModelo(veiculoInputDTO.getModelo());
         veiculo.setPreco(veiculoInputDTO.getPreco());
+
+        if (_veiculoRepository.existsByPlaca(veiculoInputDTO.getPlaca())) {
+            throw ApiException.conflict("A placa '" + veiculoInputDTO.getPlaca() + "' já está cadastrada.");
+        }
         veiculo.setPlaca(veiculoInputDTO.getPlaca());
         veiculo.setVendido(false);
         veiculo.setVendedor(vendedor);
@@ -52,22 +68,39 @@ public class VeiculoService {
 
     public Optional<VeiculoDTO> buscarVeiculoPorId(Long id)
     {
+        validarId(id);
         return _veiculoRepository.findById(id)
                 .map(this::mapearParaDTO);
     }
 
     public Optional<VeiculoDTO> atualizar(long id, VeiculoInputDTO dto) {
+        validarId(id);
+        if (dto == null) {
+            throw ApiException.badRequest("O veículo não pode ser nulo");
+        }
 
         return _veiculoRepository.findById(id)
                 .map(veiculoExistente -> {
+
+                    if (!veiculoExistente.getPlaca().equals(dto.getPlaca())) {
+                        if (_veiculoRepository.existsByPlacaAndIdNot(dto.getPlaca(), id)) {
+                            throw ApiException.conflict("A nova placa '" + dto.getPlaca() + "' já está em uso por outro veículo.");
+                        }
+                        veiculoExistente.setPlaca(dto.getPlaca());
+                    }
+
+                    if (!veiculoExistente.getVendedor().getId().equals(dto.getVendedorId())) {
+                        Vendedor novoVendedor = _vendedorRepository.findById(dto.getVendedorId())
+                                .orElseThrow(() -> ApiException.notFound("Vendedor", dto.getVendedorId()));
+                        veiculoExistente.setVendedor(novoVendedor);
+                    }
+
                     veiculoExistente.setMarca(dto.getMarca());
                     veiculoExistente.setModelo(dto.getModelo());
                     veiculoExistente.setAno(dto.getAno());
                     veiculoExistente.setPreco(dto.getPreco());
-                    veiculoExistente.setPlaca(dto.getPlaca());
 
                     Veiculo salvo = _veiculoRepository.save(veiculoExistente);
-
                     return mapearParaDTO(salvo);
                 });
     }
@@ -75,12 +108,12 @@ public class VeiculoService {
 
     public boolean deletarVeiculoPorId(Long id)
     {
-        if (_veiculoRepository.existsById(id))
-        {
-            _veiculoRepository.deleteById(id);
-            return true;
-        }
-        throw ApiException.notFound("Veiculo", id);
+        validarId(id);
+        _veiculoRepository.findById(id)
+                .orElseThrow(() -> ApiException.notFound("Veiculo", id));
+
+        _veiculoRepository.deleteById(id);
+        return true;
     }
 
     protected VeiculoDTO mapearParaDTO(Veiculo veiculo) {
