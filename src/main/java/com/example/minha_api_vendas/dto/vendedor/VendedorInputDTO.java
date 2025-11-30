@@ -16,6 +16,7 @@ public class VendedorInputDTO {
     @Email(message = "Email inválido")
     private String email;
 
+    @NotBlank(message = "Telefone é obrigatório")
     @Pattern(regexp = "^\\(\\d{2}\\) \\d{4,5}-\\d{4}$", message = "Telefone deve estar no formato (XX) XXXXX-XXXX")
     private String telefone;
 }
