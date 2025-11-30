@@ -150,8 +150,6 @@ function openModal(veiculo = null) {
     const modalDescription = document.getElementById('modalDescription');
     const submitText = document.getElementById('submitText');
     const feedback = document.getElementById('feedback');
-    const vendedorIdContainer = document.getElementById('vendedorIdContainer');
-    const vendedorIdInput = document.getElementById('vendedorIdInput');
 
     form.reset();
     feedback.innerHTML = '';
@@ -167,19 +165,11 @@ function openModal(veiculo = null) {
         document.getElementById('preco').value = veiculo.preco;
         document.getElementById('placa').value = veiculo.placa;
         document.getElementById('placa').disabled = true;
-
-        vendedorIdContainer.style.display = 'block';
-        vendedorIdInput.value = veiculo.vendedorId;
-        vendedorIdInput.required = true;
     } else {
         modalTitle.textContent = 'Cadastrar Novo Veículo';
         modalDescription.textContent = 'Preencha os dados do veículo.';
         submitText.textContent = 'Cadastrar';
         document.getElementById('placa').disabled = false;
-
-        vendedorIdContainer.style.display = 'none';
-        vendedorIdInput.value = '';
-        vendedorIdInput.required = false;
     }
 
     modal.classList.add('active');
@@ -203,7 +193,6 @@ async function editarVeiculo(id) {
         if (response.ok) {
             const veiculo = await response.json();
 
-            // ⚠️ Nova checagem: Se o veículo estiver vendido, não abre o modal de edição.
             if (veiculo.vendido) {
                 alert('Este veículo já foi vendido e não pode ser editado.');
                 return;
@@ -235,21 +224,25 @@ async function handleSubmit(event) {
     const method = veiculoId ? 'PUT' : 'POST';
     const url = veiculoId ? `${API_URL_VEICULOS}/${veiculoId}` : API_URL_VEICULOS;
 
-    let finalVendedorId;
-    if (veiculoId) {
-        finalVendedorId = parseInt(document.getElementById('vendedorIdInput').value);
-    } else {
-        finalVendedorId = parseInt(vendedorId);
-    }
-
+    // Monta o objeto base
     const data = {
         marca: document.getElementById('marca').value,
         modelo: document.getElementById('modelo').value,
         ano: parseInt(document.getElementById('ano').value),
         preco: parseFloat(document.getElementById('preco').value),
-        placa: document.getElementById('placa').value,
-        vendedorId: finalVendedorId
+        placa: document.getElementById('placa').value
     };
+
+    // ✅ Só adiciona vendedorId quando necessário
+    if (veiculoId) {
+        // Edição: NÃO envia vendedorId (backend mantém o atual)
+        // Se quiser adicionar transferência futuramente, descomente:
+        // const vendedorIdInput = document.getElementById('vendedorIdInput').value;
+        // if (vendedorIdInput) data.vendedorId = parseInt(vendedorIdInput);
+    } else {
+        // Criação: sempre obrigatório
+        data.vendedorId = parseInt(vendedorId);
+    }
 
     try {
         const response = await fetch(url, {

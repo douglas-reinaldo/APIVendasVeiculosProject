@@ -1,7 +1,7 @@
 package com.example.minha_api_vendas.service;
 
 import com.example.minha_api_vendas.dto.veiculo.VeiculoInputDTO;
-import com.example.minha_api_vendas.dto.veiculo.VeiculoDTO;
+import com.example.minha_api_vendas.dto.veiculo.VeiculoOutputDTO;
 import com.example.minha_api_vendas.exception.ApiException;
 import com.example.minha_api_vendas.model.Veiculo;
 import com.example.minha_api_vendas.model.Vendedor;
@@ -9,7 +9,6 @@ import com.example.minha_api_vendas.repository.VeiculoRepository;
 import com.example.minha_api_vendas.repository.VendedorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import java.math.BigDecimal;
 
 import java.util.List;
 import java.util.Optional;
@@ -31,10 +30,14 @@ public class VeiculoService {
         }
     }
 
-    public VeiculoDTO salvar(VeiculoInputDTO veiculoInputDTO) {
+    public VeiculoOutputDTO salvar(VeiculoInputDTO veiculoInputDTO) {
 
         if (veiculoInputDTO == null){
             throw ApiException.badRequest("O veiculo não pode ser nulo");
+        }
+
+        if (_veiculoRepository.existsByPlaca(veiculoInputDTO.getPlaca())) {
+            throw ApiException.conflict("A placa '" + veiculoInputDTO.getPlaca() + "' já está cadastrada.");
         }
 
         Vendedor vendedor = _vendedorRepository.findById(veiculoInputDTO.getVendedorId())
@@ -46,9 +49,6 @@ public class VeiculoService {
         veiculo.setModelo(veiculoInputDTO.getModelo());
         veiculo.setPreco(veiculoInputDTO.getPreco());
 
-        if (_veiculoRepository.existsByPlaca(veiculoInputDTO.getPlaca())) {
-            throw ApiException.conflict("A placa '" + veiculoInputDTO.getPlaca() + "' já está cadastrada.");
-        }
         veiculo.setPlaca(veiculoInputDTO.getPlaca());
         veiculo.setVendido(false);
         veiculo.setVendedor(vendedor);
@@ -58,7 +58,7 @@ public class VeiculoService {
         return mapearParaDTO(salvo);
     }
 
-    public List<VeiculoDTO> ListarVeiculos()
+    public List<VeiculoOutputDTO> ListarVeiculos()
     {
         return _veiculoRepository.findAll().stream()
                 .map(this::mapearParaDTO)
@@ -66,14 +66,14 @@ public class VeiculoService {
 
     }
 
-    public Optional<VeiculoDTO> buscarVeiculoPorId(Long id)
+    public Optional<VeiculoOutputDTO> buscarVeiculoPorId(Long id)
     {
         validarId(id);
         return _veiculoRepository.findById(id)
                 .map(this::mapearParaDTO);
     }
 
-    public Optional<VeiculoDTO> atualizar(long id, VeiculoInputDTO dto) {
+    public Optional<VeiculoOutputDTO> atualizar(long id, VeiculoInputDTO dto) {
         validarId(id);
         if (dto == null) {
             throw ApiException.badRequest("O veículo não pode ser nulo");
@@ -86,6 +86,7 @@ public class VeiculoService {
                         throw ApiException.badRequest("veiculo já vendido");
                     }
 
+                    // Atualiza a placa se for diferente
                     if (!veiculoExistente.getPlaca().equals(dto.getPlaca())) {
                         if (_veiculoRepository.existsByPlacaAndIdNot(dto.getPlaca(), id)) {
                             throw ApiException.conflict("A nova placa '" + dto.getPlaca() + "' já está em uso por outro veículo.");
@@ -93,13 +94,18 @@ public class VeiculoService {
                         veiculoExistente.setPlaca(dto.getPlaca());
                     }
 
-                    if (!veiculoExistente.getVendedor().getId().equals(dto.getVendedorId())) {
-                        Vendedor novoVendedor = _vendedorRepository.findById(dto.getVendedorId())
-                                .orElseThrow(() -> ApiException.notFound("Vendedor", dto.getVendedorId()));
-                        veiculoExistente.setVendedor(novoVendedor);
+                    // ✅ SÓ atualiza vendedor se vendedorId vier preenchido
+                    if (dto.getVendedorId() != null) {
+                        // Só busca novo vendedor se o ID for diferente do atual
+                        if (!veiculoExistente.getVendedor().getId().equals(dto.getVendedorId())) {
+                            Vendedor novoVendedor = _vendedorRepository.findById(dto.getVendedorId())
+                                    .orElseThrow(() -> ApiException.notFound("Vendedor", dto.getVendedorId()));
+                            veiculoExistente.setVendedor(novoVendedor);
+                        }
                     }
+                    // ✅ Se vendedorId for null, o vendedor atual é mantido automaticamente
 
-
+                    // Atualiza os outros campos
                     veiculoExistente.setMarca(dto.getMarca());
                     veiculoExistente.setModelo(dto.getModelo());
                     veiculoExistente.setAno(dto.getAno());
@@ -121,8 +127,8 @@ public class VeiculoService {
         return true;
     }
 
-    protected VeiculoDTO mapearParaDTO(Veiculo veiculo) {
-        VeiculoDTO dto = new VeiculoDTO();
+    protected VeiculoOutputDTO mapearParaDTO(Veiculo veiculo) {
+        VeiculoOutputDTO dto = new VeiculoOutputDTO();
         dto.setId(veiculo.getId());
         dto.setMarca(veiculo.getMarca());
         dto.setModelo(veiculo.getModelo());

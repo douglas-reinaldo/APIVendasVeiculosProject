@@ -1,7 +1,7 @@
 package com.example.minha_api_vendas.controller;
 
 import com.example.minha_api_vendas.dto.veiculo.VeiculoInputDTO;
-import com.example.minha_api_vendas.dto.veiculo.VeiculoDTO;
+import com.example.minha_api_vendas.dto.veiculo.VeiculoOutputDTO;
 import com.example.minha_api_vendas.service.VeiculoService;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,20 +21,20 @@ public class VeiculoController {
     private VeiculoService veiculoService;
 
     @GetMapping
-    public List<VeiculoDTO> listarVeiculos()
+    public List<VeiculoOutputDTO> listarVeiculos()
     {
         return veiculoService.ListarVeiculos();
     }
 
     @PostMapping
-    public ResponseEntity<VeiculoDTO> criarVeiculo(@Valid @RequestBody VeiculoInputDTO veiculoInputDTO) {
-        VeiculoDTO novoVeiculo = veiculoService.salvar(veiculoInputDTO);
+    public ResponseEntity<VeiculoOutputDTO> criarVeiculo(@Valid @RequestBody VeiculoInputDTO veiculoInputDTO) {
+        VeiculoOutputDTO novoVeiculo = veiculoService.salvar(veiculoInputDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(novoVeiculo);
 
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<VeiculoDTO> buscarPorId(@PathVariable Long id)
+    public ResponseEntity<VeiculoOutputDTO> buscarPorId(@PathVariable Long id)
     {
         return veiculoService.buscarVeiculoPorId(id)
                 .map(ResponseEntity::ok)
@@ -42,7 +42,7 @@ public class VeiculoController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<VeiculoDTO> atualizarVeiculo(@PathVariable Long id, @Valid @RequestBody VeiculoInputDTO veiculoInputDTO) {
+    public ResponseEntity<VeiculoOutputDTO> atualizarVeiculo(@PathVariable Long id, @Valid @RequestBody VeiculoInputDTO veiculoInputDTO) {
         return veiculoService.atualizar(id, veiculoInputDTO)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());

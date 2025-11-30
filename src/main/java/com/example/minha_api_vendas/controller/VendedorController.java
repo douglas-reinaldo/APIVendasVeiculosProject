@@ -1,6 +1,6 @@
 package com.example.minha_api_vendas.controller;
 
-import com.example.minha_api_vendas.dto.veiculo.VeiculoDTO;
+import com.example.minha_api_vendas.dto.veiculo.VeiculoOutputDTO;
 import com.example.minha_api_vendas.dto.vendedor.VendedorDetalhesDTO;
 import com.example.minha_api_vendas.dto.vendedor.VendedorInputDTO;
 import com.example.minha_api_vendas.dto.vendedor.VendedorListagemDTO;
@@ -63,9 +63,9 @@ public class VendedorController {
 
 
     @GetMapping("/{id}/veiculos")
-    public ResponseEntity<List<VeiculoDTO>> listarVeiculosPorVendedorId(@PathVariable long id)
+    public ResponseEntity<List<VeiculoOutputDTO>> listarVeiculosPorVendedorId(@PathVariable long id)
     {
-        List<VeiculoDTO> veiculos = vendedorService.listarVeiculos(id);
+        List<VeiculoOutputDTO> veiculos = vendedorService.listarVeiculos(id);
         return ResponseEntity.ok(veiculos);
     }
 }

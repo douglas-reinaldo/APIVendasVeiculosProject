@@ -31,8 +31,6 @@ public class VeiculoInputDTO {
             message = "Placa deve estar no formato ABC-1234 ou ABC1D23 (Mercosul)")
     private String placa;
 
-
-    @NotNull(message = "Vendedor é obrigatorio")
     private Long vendedorId;
 }
 

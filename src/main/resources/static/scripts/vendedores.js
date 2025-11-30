@@ -65,10 +65,7 @@ function criarCardVendedor(vendedor, index) {
                     </div>
                     <div>
                         <h3 style="font-size: 1.25rem; margin: 0;">${vendedor.nome}</h3>
-                        <p style="font-size: 0.875rem; color: hsl(var(--color-muted-foreground)); margin: 0;">
-                            ID: ${vendedor.id}
-                        </p>
-                    </div>
+                        </div>
                 </div>
             </div>
 
@@ -118,7 +115,8 @@ function openModal(vendedor = null) {
     feedback.innerHTML = '';
 
     if (vendedor) {
-        modalTitle.textContent = `Editar Vendedor #${vendedor.id}`;
+        // Alterado: Exibir o nome em vez do ID no título do modal
+        modalTitle.textContent = `Editar Vendedor: ${vendedor.nome}`;
         modalDescription.textContent = 'Atualize as informações do vendedor abaixo.';
         submitText.textContent = 'Atualizar';
         document.getElementById('vendedorId').value = vendedor.id;

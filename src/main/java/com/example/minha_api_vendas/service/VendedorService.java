@@ -1,6 +1,6 @@
 package com.example.minha_api_vendas.service;
 
-import com.example.minha_api_vendas.dto.veiculo.VeiculoDTO;
+import com.example.minha_api_vendas.dto.veiculo.VeiculoOutputDTO;
 import com.example.minha_api_vendas.dto.vendedor.VendedorDetalhesDTO;
 import com.example.minha_api_vendas.dto.vendedor.VendedorInputDTO;
 import com.example.minha_api_vendas.dto.vendedor.VendedorListagemDTO;
@@ -56,11 +56,11 @@ public class VendedorService {
         }
 
         Vendedor vendedorSalvo = mapearParaEntidade(vendedor);
-        if (vendedorRepository.existsByEmail(vendedor.getEmail())) {
+        if (vendedorRepository.existsByEmail(vendedorSalvo.getEmail())) {
             throw ApiException.conflict("O Email '" + vendedor.getEmail() + "' já está cadastrado");
         }
 
-        if (vendedorRepository.existsByTelefone(vendedor.getTelefone())) {
+        if (vendedorRepository.existsByTelefone(vendedorSalvo.getTelefone())) {
             throw ApiException.conflict("O Telefone '" + vendedor.getTelefone() + "' já está cadastrado");
         }
         vendedorRepository.save(vendedorSalvo);
@@ -112,7 +112,7 @@ public class VendedorService {
         return true;
     }
 
-    public List<VeiculoDTO> listarVeiculos(Long id)
+    public List<VeiculoOutputDTO> listarVeiculos(Long id)
     {
         validarId(id);
 
@@ -141,12 +141,12 @@ public class VendedorService {
         vendedorDTO.setTelefone(vendedor.getTelefone());
         vendedorDTO.setId(vendedor.getId());
 
-        List<VeiculoDTO> veiculoDTOS = vendedor.getVeiculos()
+        List<VeiculoOutputDTO> veiculoOutputDTOS = vendedor.getVeiculos()
                 .stream()
                 .map(v -> veiculoService.mapearParaDTO(v))
                 .toList();
 
-        vendedorDTO.setVeiculos(veiculoDTOS);
+        vendedorDTO.setVeiculos(veiculoOutputDTOS);
         return vendedorDTO;
     }
 
