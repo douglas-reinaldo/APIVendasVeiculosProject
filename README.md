@@ -108,8 +108,8 @@ Antes de começar, certifique-se de ter instalado:
 1. **Clone o repositório**
 
 ```bash
-git clone https://github.com/seu-usuario/minha-api-vendas.git
-cd minha-api-vendas
+git clone https://github.com/douglas-reinaldo/APIVendasVeiculosProject.git
+cd APIVendasVeiculosProject
 ```
 
 2. **Configure o banco de dados MySQL**
