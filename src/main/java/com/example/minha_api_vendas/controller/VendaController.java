@@ -17,30 +17,25 @@ import java.util.List;
 public class VendaController {
 
     @Autowired
-    private VendaService _vendaService;
+    private VendaService vendaService;
 
 
     @GetMapping
-    public List<VendaOutputDTO> ListarVendas(){
-        return _vendaService.ListarVendas();
+    public List<VendaOutputDTO> listarVendas(){
+        return vendaService.listarVendas();
     }
 
     @PostMapping
-    public ResponseEntity<VendaOutputDTO> RegistrarVenda(@Valid @RequestBody VendaInputDTO vendaInputDTO)
-    {
-        try {
-            VendaOutputDTO novaVenda = _vendaService.RegistrarVenda(vendaInputDTO);
-            return ResponseEntity.status(HttpStatus.CREATED).body(novaVenda);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
+    public ResponseEntity<VendaOutputDTO> registrarVenda(@Valid @RequestBody VendaInputDTO vendaInputDTO) throws Exception {
+        VendaOutputDTO novaVenda = vendaService.registrarVenda(vendaInputDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(novaVenda);
     }
 
 
     @GetMapping("/{id}")
-    public ResponseEntity<VendaOutputDTO> ObterVendaPorId(@PathVariable long id)
+    public ResponseEntity<VendaOutputDTO> obterVendaPorId(@PathVariable long id)
     {
-        return _vendaService.BuscarVendaPorId(id)
+        return vendaService.buscarVendaPorId(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }

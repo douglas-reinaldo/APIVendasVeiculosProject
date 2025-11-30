@@ -19,19 +19,19 @@ import java.util.Optional;
 public class VendaService {
 
     @Autowired
-    private VendaRepository _vendaRepository;
+    private VendaRepository vendaRepository;
 
     @Autowired
-    private VendedorRepository _vendedorRepository;
+    private VendedorRepository vendedorRepository;
 
     @Autowired
-    private VeiculoRepository _veiculoRepository;
+    private VeiculoRepository veiculoRepository;
 
-    public VendaOutputDTO RegistrarVenda(VendaInputDTO  vendaInputDTO) throws Exception {
-        Vendedor vendedor = _vendedorRepository.findById(vendaInputDTO.getVendedorId())
+    public VendaOutputDTO registrarVenda(VendaInputDTO  vendaInputDTO) throws Exception {
+        Vendedor vendedor = vendedorRepository.findById(vendaInputDTO.getVendedorId())
                 .orElseThrow(() -> ApiException.notFound("Vendedor", vendaInputDTO.getVendedorId()));
 
-        Veiculo veiculo = _veiculoRepository.findById(vendaInputDTO.getVeiculoId())
+        Veiculo veiculo = veiculoRepository.findById(vendaInputDTO.getVeiculoId())
                 .orElseThrow(() -> ApiException.notFound("Veiculo", vendaInputDTO.getVeiculoId()));
 
 
@@ -47,22 +47,22 @@ public class VendaService {
         venda.setValorFinal(veiculo.getPreco());
 
         veiculo.setVendido(true);
-        venda = _vendaRepository.save(venda);
-        _veiculoRepository.save(veiculo);
+        venda = vendaRepository.save(venda);
+        veiculoRepository.save(veiculo);
 
         return new VendaOutputDTO(venda);
 
     }
 
-    public List<VendaOutputDTO> ListarVendas()
+    public List<VendaOutputDTO> listarVendas()
     {
-        return _vendaRepository.findAll()
+        return vendaRepository.findAll()
                 .stream()
-                .map(this::MapearParaDTO)
+                .map(this::mapearParaDTO)
                 .toList();
     }
 
-    protected VendaOutputDTO MapearParaDTO(Venda venda) {
+    protected VendaOutputDTO mapearParaDTO(Venda venda) {
         VendaOutputDTO dto = new VendaOutputDTO();
 
         dto.setId(venda.getId());
@@ -74,10 +74,10 @@ public class VendaService {
         return dto;
     }
 
-    public Optional<VendaOutputDTO> BuscarVendaPorId(Long id)
+    public Optional<VendaOutputDTO> buscarVendaPorId(Long id)
     {
-        return _vendaRepository.findById(id)
-                .map(this::MapearParaDTO);
+        return vendaRepository.findById(id)
+                .map(this::mapearParaDTO);
     }
 
 }
