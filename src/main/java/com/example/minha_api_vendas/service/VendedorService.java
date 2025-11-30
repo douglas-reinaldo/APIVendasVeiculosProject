@@ -21,7 +21,7 @@ public class VendedorService {
     @Autowired
     private VeiculoService veiculoService;
 
-    public void validarId(Long id)
+    private void validarId(Long id)
     {
         if (id == null || id <= 0) {
             throw ApiException.badRequest("O ID do vendedor deve ser um valor positivo e não pode ser nulo.");

@@ -24,7 +24,7 @@ public class VeiculoService {
     @Autowired
     private VendedorRepository _vendedorRepository;
 
-    public void validarId(Long id)
+    private void validarId(Long id)
     {
         if (id == null || id <= 0) {
             throw ApiException.badRequest("O ID do vendedor deve ser um valor positivo e não pode ser nulo.");
@@ -82,6 +82,10 @@ public class VeiculoService {
         return _veiculoRepository.findById(id)
                 .map(veiculoExistente -> {
 
+                    if (veiculoExistente.getVendido()){
+                        throw ApiException.badRequest("veiculo já vendido");
+                    }
+
                     if (!veiculoExistente.getPlaca().equals(dto.getPlaca())) {
                         if (_veiculoRepository.existsByPlacaAndIdNot(dto.getPlaca(), id)) {
                             throw ApiException.conflict("A nova placa '" + dto.getPlaca() + "' já está em uso por outro veículo.");
@@ -94,6 +98,7 @@ public class VeiculoService {
                                 .orElseThrow(() -> ApiException.notFound("Vendedor", dto.getVendedorId()));
                         veiculoExistente.setVendedor(novoVendedor);
                     }
+
 
                     veiculoExistente.setMarca(dto.getMarca());
                     veiculoExistente.setModelo(dto.getModelo());

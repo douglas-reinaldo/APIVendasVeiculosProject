@@ -6,313 +6,19 @@
     <title>Sistema de Gestão de Vendedores</title>
     <meta name="description" content="Plataforma moderna para gerenciamento de vendedores e veículos" />
 
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 
     <script src="https://cdn.tailwindcss.com"></script>
-
     <script src="https://unpkg.com/lucide@latest"></script>
 
-    <style>
-        :root {
-            --color-primary: 199 89% 48%;
-            --color-primary-glow: 199 89% 58%;
-            --color-secondary: 174 72% 56%;
-            --color-background: 210 20% 98%;
-            --color-foreground: 215 25% 15%;
-            --color-card: 0 0% 100%;
-            --color-muted: 210 20% 95%;
-            --color-muted-foreground: 215 16% 47%;
-            --color-border: 215 20% 88%;
-            --color-destructive: 0 84% 60%;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: hsl(var(--color-background));
-            color: hsl(var(--color-foreground));
-            line-height: 1.6;
-        }
-
-        h1, h2, h3, h4, h5, h6 {
-            font-family: 'Outfit', sans-serif;
-            font-weight: 600;
-        }
-
-        .gradient-primary {
-            background: linear-gradient(135deg, hsl(199 89% 48%), hsl(174 72% 56%));
-        }
-
-        .gradient-text {
-            background: linear-gradient(135deg, hsl(199 89% 48%), hsl(174 72% 56%));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .shadow-elegant {
-            box-shadow: 0 10px 40px -10px hsl(199 89% 48% / 0.15);
-        }
-
-        .shadow-hover {
-            box-shadow: 0 20px 50px -15px hsl(199 89% 48% / 0.25);
-        }
-
-        .card {
-            background: linear-gradient(145deg, hsl(0 0% 100% / 0.9), hsl(210 20% 98% / 0.7));
-            border: 1px solid hsl(var(--color-border) / 0.5);
-            border-radius: 0.75rem;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 4px;
-            height: 100%;
-            background: linear-gradient(135deg, hsl(199 89% 48%), hsl(174 72% 56%));
-        }
-
-        .card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 20px 50px -15px hsl(199 89% 48% / 0.25);
-        }
-
-        .btn {
-            padding: 0.5rem 1rem;
-            border-radius: 0.5rem;
-            font-weight: 500;
-            transition: all 0.3s;
-            cursor: pointer;
-            border: none;
-            font-family: 'Inter', sans-serif;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, hsl(199 89% 48%), hsl(174 72% 56%));
-            color: white;
-            box-shadow: 0 10px 40px -10px hsl(199 89% 48% / 0.15);
-        }
-
-        .btn-primary:hover {
-            opacity: 0.9;
-        }
-
-        .btn-outline {
-            background: transparent;
-            border: 1px solid hsl(var(--color-border));
-            color: hsl(var(--color-foreground));
-        }
-
-        .btn-outline:hover {
-            background: hsl(var(--color-muted));
-        }
-
-        .btn-icon {
-            width: 2.5rem;
-            height: 2.5rem;
-            padding: 0;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 0.5rem;
-            background: transparent;
-            border: none;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .btn-icon:hover {
-            background: hsl(var(--color-muted));
-        }
-
-        .btn-icon.edit:hover {
-            background: hsl(199 89% 48% / 0.1);
-            color: hsl(var(--color-primary));
-        }
-
-        .btn-icon.delete:hover {
-            background: hsl(0 84% 60% / 0.1);
-            color: hsl(var(--color-destructive));
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(4px);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-            animation: fadeIn 0.3s;
-        }
-
-        .modal.active {
-            display: flex;
-        }
-
-        .modal-content {
-            background: white;
-            border-radius: 1rem;
-            padding: 2rem;
-            max-width: 500px;
-            width: 90%;
-            max-height: 90vh;
-            overflow-y: auto;
-            box-shadow: 0 20px 50px -15px rgba(0, 0, 0, 0.3);
-            animation: scaleIn 0.3s;
-        }
-
-        .input {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid hsl(var(--color-border));
-            border-radius: 0.5rem;
-            font-family: 'Inter', sans-serif;
-            transition: all 0.2s;
-        }
-
-        .input:focus {
-            outline: none;
-            border-color: hsl(var(--color-primary));
-            box-shadow: 0 0 0 3px hsl(var(--color-primary) / 0.1);
-        }
-
-        .badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.25rem;
-            padding: 0.25rem 0.75rem;
-            border-radius: 0.375rem;
-            font-size: 0.875rem;
-            font-weight: 500;
-            background: hsl(174 72% 56% / 0.1);
-            color: hsl(174 72% 56%);
-            border: 1px solid hsl(174 72% 56% / 0.2);
-        }
-
-        .avatar {
-            width: 3rem;
-            height: 3rem;
-            border-radius: 9999px;
-            background: linear-gradient(135deg, hsl(199 89% 48%), hsl(174 72% 56%));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-        }
-
-        .spinner {
-            border: 3px solid hsl(var(--color-muted));
-            border-top-color: hsl(var(--color-primary));
-            border-radius: 50%;
-            width: 3rem;
-            height: 3rem;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        @keyframes scaleIn {
-            from { transform: scale(0.95); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        @keyframes slideUp {
-            from { transform: translateY(20px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-
-        .animate-slide-up {
-            animation: slideUp 0.4s ease-out;
-        }
-
-        .grid {
-            display: grid;
-            gap: 1.5rem;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-        }
-
-        @media (max-width: 768px) {
-            .grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .alert {
-            padding: 1rem;
-            border-radius: 0.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-
-        .alert-warning {
-            background: hsl(45 93% 47% / 0.1);
-            color: hsl(45 93% 47%);
-            border: 1px solid hsl(45 93% 47% / 0.2);
-        }
-
-        .alert-danger {
-            background: hsl(0 84% 60% / 0.1);
-            color: hsl(0 84% 60%);
-            border: 1px solid hsl(0 84% 60% / 0.2);
-        }
-
-        header {
-            background: hsl(var(--color-card) / 0.95);
-            backdrop-filter: blur(8px);
-            border-bottom: 1px solid hsl(var(--color-border) / 0.5);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 5rem 1rem;
-        }
-
-        .empty-icon {
-            width: 5rem;
-            height: 5rem;
-            border-radius: 9999px;
-            background: hsl(var(--color-muted));
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 1rem;
-            color: hsl(var(--color-muted-foreground));
-        }
-    </style>
+    <!-- Tema CSS -->
+    <link rel="stylesheet" href="styles/theme.css">
 </head>
 <body>
+<!-- Header -->
 <header>
     <div style="max-width: 1280px; margin: 0 auto; padding: 1.5rem;">
         <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
@@ -344,12 +50,15 @@
     </div>
 </header>
 
+<!-- Main Content -->
 <main style="max-width: 1280px; margin: 0 auto; padding: 2rem;">
+    <!-- Loading State -->
     <div id="loading" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 5rem 1rem;">
         <div class="spinner"></div>
         <p style="margin-top: 1rem; color: hsl(var(--color-muted-foreground));">Carregando vendedores...</p>
     </div>
 
+    <!-- Empty State -->
     <div id="emptyState" style="display: none;">
         <div class="empty-state animate-slide-up">
             <div class="empty-icon">
@@ -366,6 +75,7 @@
         </div>
     </div>
 
+    <!-- Error State -->
     <div id="errorState" style="display: none;">
         <div class="alert alert-danger">
             <i data-lucide="x-circle" style="width: 1.25rem; height: 1.25rem;"></i>
@@ -373,9 +83,11 @@
         </div>
     </div>
 
+    <!-- Vendedores Grid -->
     <div id="vendedoresContainer" class="grid"></div>
 </main>
 
+<!-- Modal -->
 <div id="modal" class="modal">
     <div class="modal-content">
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem;">
@@ -422,250 +134,8 @@
     </div>
 </div>
 
-<script>
-    const API_URL = 'http://localhost:8080/api/vendedores';
-    let currentVendedor = null;
-
-    // Initialize Lucide icons
-    lucide.createIcons();
-
-    // Load vendedores on page load
-    document.addEventListener('DOMContentLoaded', carregarVendedores);
-
-    async function carregarVendedores() {
-        const loading = document.getElementById('loading');
-        const emptyState = document.getElementById('emptyState');
-        const errorState = document.getElementById('errorState');
-        const container = document.getElementById('vendedoresContainer');
-
-        loading.style.display = 'flex';
-        emptyState.style.display = 'none';
-        errorState.style.display = 'none';
-        container.innerHTML = '';
-
-        try {
-            const response = await fetch(API_URL);
-            if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
-
-            const vendedores = await response.json();
-            loading.style.display = 'none';
-
-            if (vendedores.length === 0) {
-                emptyState.style.display = 'block';
-                lucide.createIcons();
-                return;
-            }
-
-            container.innerHTML = vendedores.map((v, index) => {
-                // *** Alteração: Usando 'numeroVeiculos' conforme solicitado e tratando pluralização ***
-                const numVeiculos = v.numeroVeiculos || 0;
-                const plural = numVeiculos !== 1 ? 's' : '';
-
-                return `
-                <div class="card animate-slide-up" style="padding: 1.5rem; animation-delay: ${index * 0.1}s;">
-                    <div style="display: flex; align-items: start; justify-content: space-between; margin-bottom: 1rem;">
-                        <div style="display: flex; align-items: center; gap: 0.75rem;">
-                            <div class="avatar">
-                                <i data-lucide="user" style="width: 1.5rem; height: 1.5rem;"></i>
-                            </div>
-                            <div>
-                                <h3 style="font-size: 1.25rem; margin: 0; transition: color 0.2s;">${v.nome}</h3>
-                                <p style="font-size: 0.875rem; color: hsl(var(--color-muted-foreground)); margin: 0;">
-                                    ID: ${v.id}
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div style="margin-bottom: 1rem;">
-                        <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; color: hsl(var(--color-muted-foreground));">
-                            <i data-lucide="mail" style="width: 1rem; height: 1rem;"></i>
-                            <span style="overflow: hidden; text-overflow: ellipsis;">${v.email}</span>
-                        </div>
-                    </div>
-
-                    <div style="display: flex; align-items: center; justify-content: space-between;">
-                        <span class="badge">
-                            <i data-lucide="car" style="width: 0.875rem; height: 0.875rem;"></i>
-                            ${numVeiculos} Veículo${plural}
-                        </span>
-
-                        <div style="display: flex; gap: 0.5rem;">
-                            <button class="btn-icon edit" onclick="editarVendedor(${v.id})" title="Editar">
-                                <i data-lucide="pencil" style="width: 1rem; height: 1rem;"></i>
-                            </button>
-                            <button class="btn-icon delete" onclick="deletarVendedor(${v.id})" title="Deletar">
-                                <i data-lucide="trash-2" style="width: 1rem; height: 1rem;"></i>
-                            </button>
-                            <button class="btn btn-primary" style="padding: 0.5rem 0.75rem; font-size: 0.875rem;" onclick="verVeiculos(${v.id}, '${v.nome}')">
-                                <i data-lucide="car" style="width: 1rem; height: 1rem;"></i>
-                                Ver Carros
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            `;
-            }).join('');
-
-            lucide.createIcons();
-        } catch (error) {
-            console.error('Erro ao carregar vendedores:', error);
-            loading.style.display = 'none';
-            errorState.style.display = 'block';
-            lucide.createIcons();
-        }
-    }
-
-    function openModal(vendedor = null) {
-        currentVendedor = vendedor;
-        const modal = document.getElementById('modal');
-        const form = document.getElementById('formVendedor');
-        const modalTitle = document.getElementById('modalTitle');
-        const modalDescription = document.getElementById('modalDescription');
-        const submitText = document.getElementById('submitText');
-        const feedback = document.getElementById('feedback');
-
-        form.reset();
-        feedback.innerHTML = '';
-
-        if (vendedor) {
-            modalTitle.textContent = `Editar Vendedor #${vendedor.id}`;
-            modalDescription.textContent = 'Atualize as informações do vendedor abaixo.';
-            submitText.textContent = 'Atualizar';
-            document.getElementById('vendedorId').value = vendedor.id;
-            document.getElementById('nome').value = vendedor.nome;
-            document.getElementById('email').value = vendedor.email;
-            document.getElementById('telefone').value = vendedor.telefone || '';
-        } else {
-            modalTitle.textContent = 'Cadastrar Novo Vendedor';
-            modalDescription.textContent = 'Preencha os dados para cadastrar um novo vendedor.';
-            submitText.textContent = 'Cadastrar';
-        }
-
-        modal.classList.add('active');
-    }
-
-    function closeModal() {
-        const modal = document.getElementById('modal');
-        modal.classList.remove('active');
-        currentVendedor = null;
-    }
-
-    async function editarVendedor(id) {
-        try {
-            const response = await fetch(`${API_URL}/${id}`);
-            if (response.ok) {
-                const vendedor = await response.json();
-                openModal(vendedor);
-            } else {
-                alert('Vendedor não encontrado.');
-            }
-        } catch (error) {
-            alert('Erro ao buscar vendedor.');
-        }
-    }
-
-    async function handleSubmit(event) {
-        event.preventDefault();
-
-        const submitBtn = document.getElementById('submitBtn');
-        const submitText = document.getElementById('submitText');
-        const feedback = document.getElementById('feedback');
-
-        submitBtn.disabled = true;
-        submitText.innerHTML = '<div class="spinner" style="width: 1rem; height: 1rem; border-width: 2px;"></div> Salvando...';
-
-        const vendedorId = document.getElementById('vendedorId').value;
-        const method = vendedorId ? 'PUT' : 'POST';
-        const url = vendedorId ? `${API_URL}/${vendedorId}` : API_URL;
-
-        const data = {
-            nome: document.getElementById('nome').value,
-            email: document.getElementById('email').value,
-            telefone: document.getElementById('telefone').value || null
-        };
-
-        try {
-            const response = await fetch(url, {
-                method,
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            });
-
-            if (response.ok || response.status === 201) {
-                feedback.innerHTML = `
-                    <div class="alert" style="background: hsl(142 76% 36% / 0.1); color: hsl(142 76% 36%); border: 1px solid hsl(142 76% 36% / 0.2);">
-                        <i data-lucide="check-circle" style="width: 1.25rem; height: 1.25rem;"></i>
-                        <span>Vendedor ${vendedorId ? 'atualizado' : 'cadastrado'} com sucesso!</span>
-                    </div>
-                `;
-                lucide.createIcons();
-
-                setTimeout(() => {
-                    closeModal();
-                    carregarVendedores();
-                }, 1500);
-            } else if (response.status === 400) {
-                feedback.innerHTML = `
-                    <div class="alert alert-danger">
-                        <i data-lucide="x-octagon" style="width: 1.25rem; height: 1.25rem;"></i>
-                        <span>Erro: Verifique os campos ou se o email já está cadastrado.</span>
-                    </div>
-                `;
-                lucide.createIcons();
-            } else {
-                throw new Error('Erro ao salvar');
-            }
-        } catch (error) {
-            feedback.innerHTML = `
-                <div class="alert alert-danger">
-                    <i data-lucide="wifi-off" style="width: 1.25rem; height: 1.25rem;"></i>
-                    <span>Erro de comunicação com a API.</span>
-                </div>
-            `;
-            lucide.createIcons();
-        } finally {
-            submitBtn.disabled = false;
-            submitText.textContent = vendedorId ? 'Atualizar' : 'Cadastrar';
-        }
-    }
-
-    async function deletarVendedor(id) {
-        if (!confirm('Tem certeza que deseja deletar este vendedor? Esta ação é irreversível!')) return;
-
-        try {
-            const response = await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
-
-            if (response.status === 204) {
-                alert('Vendedor deletado com sucesso!');
-                carregarVendedores();
-            } else if (response.status === 404) {
-                alert('Vendedor não encontrado.');
-            } else {
-                alert('Erro ao deletar. Verifique se o vendedor não possui dependências.');
-            }
-        } catch (error) {
-            alert('Erro de comunicação ao deletar.');
-        }
-    }
-
-    function verVeiculos(id, nome) {
-        window.location.href = `veiculos_vendedor.html?vendedorId=${id}&nome=${nome}`;
-    }
-
-    // Close modal on outside click
-    document.getElementById('modal').addEventListener('click', function(e) {
-        if (e.target === this) {
-            closeModal();
-        }
-    });
-
-    // Close modal on ESC key
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') {
-            closeModal();
-        }
-    });
-</script>
+<!-- Utilitários e Lógica -->
+<script src="scripts/utils.js"></script>
+<script src="scripts/vendedores.js"></script>
 </body>
 </html>

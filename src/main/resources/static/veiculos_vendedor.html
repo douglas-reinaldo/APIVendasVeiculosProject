@@ -6,335 +6,22 @@
     <title>Veículos do Vendedor - Sistema de Gestão</title>
     <meta name="description" content="Gerencie os veículos de um vendedor específico" />
 
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
 
+    <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
 
-    <style>
-        :root {
-            --color-primary: 199 89% 48%;
-            --color-primary-glow: 199 89% 58%;
-            --color-secondary: 174 72% 56%;
-            --color-background: 210 20% 98%;
-            --color-foreground: 215 25% 15%;
-            --color-card: 0 0% 100%;
-            --color-muted: 210 20% 95%;
-            --color-muted-foreground: 215 16% 47%;
-            --color-border: 215 20% 88%;
-            --color-destructive: 0 84% 60%;
-            --color-success: 142 76% 36%;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: hsl(var(--color-background));
-            color: hsl(var(--color-foreground));
-            line-height: 1.6;
-        }
-
-        h1, h2, h3, h4, h5, h6 {
-            font-family: 'Outfit', sans-serif;
-            font-weight: 600;
-        }
-
-        .gradient-primary {
-            background: linear-gradient(135deg, hsl(199 89% 48%), hsl(174 72% 56%));
-        }
-
-        .gradient-text {
-            background: linear-gradient(135deg, hsl(199 89% 48%), hsl(174 72% 56%));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .shadow-elegant {
-            box-shadow: 0 10px 40px -10px hsl(199 89% 48% / 0.15);
-        }
-
-        .shadow-hover {
-            box-shadow: 0 20px 50px -15px hsl(199 89% 48% / 0.25);
-        }
-
-        .card {
-            background: linear-gradient(145deg, hsl(0 0% 100% / 0.9), hsl(210 20% 98% / 0.7));
-            border: 1px solid hsl(var(--color-border) / 0.5);
-            border-radius: 0.75rem;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 4px;
-            height: 100%;
-            background: linear-gradient(135deg, hsl(199 89% 48%), hsl(174 72% 56%));
-        }
-
-        .card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 20px 50px -15px hsl(199 89% 48% / 0.25);
-        }
-
-        .card.vendido {
-            opacity: 0.6;
-        }
-
-        .card.vendido::before {
-            background: hsl(var(--color-muted-foreground));
-        }
-
-        .btn {
-            padding: 0.5rem 1rem;
-            border-radius: 0.5rem;
-            font-weight: 500;
-            transition: all 0.3s;
-            cursor: pointer;
-            border: none;
-            font-family: 'Inter', sans-serif;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, hsl(199 89% 48%), hsl(174 72% 56%));
-            color: white;
-            box-shadow: 0 10px 40px -10px hsl(199 89% 48% / 0.15);
-        }
-
-        .btn-primary:hover {
-            opacity: 0.9;
-        }
-
-        .btn-success {
-            background: hsl(var(--color-success));
-            color: white;
-        }
-
-        .btn-success:hover {
-            opacity: 0.9;
-        }
-
-        .btn-outline {
-            background: transparent;
-            border: 1px solid hsl(var(--color-border));
-            color: hsl(var(--color-foreground));
-        }
-
-        .btn-outline:hover {
-            background: hsl(var(--color-muted));
-        }
-
-        .btn-icon {
-            width: 2.5rem;
-            height: 2.5rem;
-            padding: 0;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 0.5rem;
-            background: transparent;
-            border: none;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .btn-icon:hover {
-            background: hsl(var(--color-muted));
-        }
-
-        .btn-icon.edit:hover {
-            background: hsl(199 89% 48% / 0.1);
-            color: hsl(var(--color-primary));
-        }
-
-        .btn-icon.delete:hover {
-            background: hsl(0 84% 60% / 0.1);
-            color: hsl(var(--color-destructive));
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(4px);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-            animation: fadeIn 0.3s;
-        }
-
-        .modal.active {
-            display: flex;
-        }
-
-        .modal-content {
-            background: white;
-            border-radius: 1rem;
-            padding: 2rem;
-            max-width: 500px;
-            width: 90%;
-            max-height: 90vh;
-            overflow-y: auto;
-            box-shadow: 0 20px 50px -15px rgba(0, 0, 0, 0.3);
-            animation: scaleIn 0.3s;
-        }
-
-        .input {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid hsl(var(--color-border));
-            border-radius: 0.5rem;
-            font-family: 'Inter', sans-serif;
-            transition: all 0.2s;
-        }
-
-        .input:focus {
-            outline: none;
-            border-color: hsl(var(--color-primary));
-            box-shadow: 0 0 0 3px hsl(var(--color-primary) / 0.1);
-        }
-
-        .badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.25rem;
-            padding: 0.25rem 0.75rem;
-            border-radius: 0.375rem;
-            font-size: 0.875rem;
-            font-weight: 500;
-        }
-
-        .badge-success {
-            background: hsl(142 76% 36% / 0.1);
-            color: hsl(142 76% 36%);
-            border: 1px solid hsl(142 76% 36% / 0.2);
-        }
-
-        .badge-danger {
-            background: hsl(0 84% 60% / 0.1);
-            color: hsl(0 84% 60%);
-            border: 1px solid hsl(0 84% 60% / 0.2);
-        }
-
-        .spinner {
-            border: 3px solid hsl(var(--color-muted));
-            border-top-color: hsl(var(--color-primary));
-            border-radius: 50%;
-            width: 3rem;
-            height: 3rem;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        @keyframes scaleIn {
-            from { transform: scale(0.95); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        @keyframes slideUp {
-            from { transform: translateY(20px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-
-        .animate-slide-up {
-            animation: slideUp 0.4s ease-out;
-        }
-
-        .grid {
-            display: grid;
-            gap: 1.5rem;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-        }
-
-        @media (max-width: 768px) {
-            .grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .alert {
-            padding: 1rem;
-            border-radius: 0.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-
-        .alert-warning {
-            background: hsl(45 93% 47% / 0.1);
-            color: hsl(45 93% 47%);
-            border: 1px solid hsl(45 93% 47% / 0.2);
-        }
-
-        .alert-danger {
-            background: hsl(0 84% 60% / 0.1);
-            color: hsl(0 84% 60%);
-            border: 1px solid hsl(0 84% 60% / 0.2);
-        }
-
-        .alert-success {
-            background: hsl(142 76% 36% / 0.1);
-            color: hsl(142 76% 36%);
-            border: 1px solid hsl(142 76% 36% / 0.2);
-        }
-
-        header {
-            background: hsl(var(--color-card) / 0.95);
-            backdrop-filter: blur(8px);
-            border-bottom: 1px solid hsl(var(--color-border) / 0.5);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 5rem 1rem;
-        }
-
-        .empty-icon {
-            width: 5rem;
-            height: 5rem;
-            border-radius: 9999px;
-            background: hsl(var(--color-muted));
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 1rem;
-            color: hsl(var(--color-muted-foreground));
-        }
-    </style>
+    <!-- Tema CSS -->
+    <link rel="stylesheet" href="styles/theme.css">
 </head>
 <body>
+<!-- Header -->
 <header>
     <div style="max-width: 1280px; margin: 0 auto; padding: 1.5rem;">
         <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
@@ -366,12 +53,15 @@
     </div>
 </header>
 
+<!-- Main Content -->
 <main style="max-width: 1280px; margin: 0 auto; padding: 2rem;">
+    <!-- Loading State -->
     <div id="loading" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 5rem 1rem;">
         <div class="spinner"></div>
         <p style="margin-top: 1rem; color: hsl(var(--color-muted-foreground));">Carregando veículos...</p>
     </div>
 
+    <!-- Empty State -->
     <div id="emptyState" style="display: none;">
         <div class="empty-state animate-slide-up">
             <div class="empty-icon">
@@ -388,6 +78,7 @@
         </div>
     </div>
 
+    <!-- Error State -->
     <div id="errorState" style="display: none;">
         <div class="alert alert-danger">
             <i data-lucide="x-circle" style="width: 1.25rem; height: 1.25rem;"></i>
@@ -395,9 +86,11 @@
         </div>
     </div>
 
+    <!-- Veículos Grid -->
     <div id="veiculosContainer" class="grid"></div>
 </main>
 
+<!-- Modal -->
 <div id="modal" class="modal">
     <div class="modal-content">
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem;">
@@ -447,9 +140,10 @@
                 </label>
                 <input type="number" id="vendedorIdInput" class="input" placeholder="ID do novo vendedor (Ex: 5)">
                 <p style="font-size: 0.75rem; color: hsl(var(--color-muted-foreground)); margin-top: 0.25rem;">
-                    Use este campo para **transferir** o veículo para outro vendedor.
+                    Use este campo para <strong>transferir</strong> o veículo para outro vendedor.
                 </p>
             </div>
+
             <div id="feedback" style="margin-bottom: 1rem;"></div>
 
             <div style="display: flex; gap: 0.75rem;">
@@ -464,336 +158,8 @@
     </div>
 </div>
 
-<script>
-    const API_URL_BASE = 'http://localhost:8080/api/vendedores';
-    const API_URL_VEICULOS = 'http://localhost:8080/api/veiculos';
-
-    let vendedorId = null;
-    let vendedorNome = '';
-    let currentVeiculo = null;
-
-    lucide.createIcons();
-    document.addEventListener('DOMContentLoaded', carregarVeiculosDoVendedor);
-
-    function getQueryParams() {
-        const params = new URLSearchParams(window.location.search);
-        return {
-            id: params.get('vendedorId'),
-            nome: params.get('nome')
-        };
-    }
-
-    async function carregarVeiculosDoVendedor() {
-        const params = getQueryParams();
-        vendedorId = params.id;
-        vendedorNome = params.nome;
-
-        if (!vendedorId) {
-            document.getElementById('loading').innerHTML = '<div class="alert alert-danger"><i data-lucide="x-circle"></i> ID do vendedor não fornecido.</div>';
-            lucide.createIcons();
-            return;
-        }
-
-        document.getElementById('vendedorNome').textContent = vendedorNome || `ID ${vendedorId}`;
-
-        const loading = document.getElementById('loading');
-        const emptyState = document.getElementById('emptyState');
-        const errorState = document.getElementById('errorState');
-        const container = document.getElementById('veiculosContainer');
-
-        loading.style.display = 'flex';
-        emptyState.style.display = 'none';
-        errorState.style.display = 'none';
-        container.innerHTML = '';
-
-        try {
-            const response = await fetch(`${API_URL_BASE}/${vendedorId}/veiculos`);
-
-            if (response.status === 404) {
-                loading.innerHTML = '<div class="alert alert-warning"><i data-lucide="alert-triangle"></i> Vendedor não encontrado.</div>';
-                lucide.createIcons();
-                return;
-            }
-
-            const veiculos = await response.json();
-            loading.style.display = 'none';
-
-            if (veiculos.length === 0) {
-                emptyState.style.display = 'block';
-                lucide.createIcons();
-                return;
-            }
-
-            container.innerHTML = veiculos.map((v, index) => {
-                const isVendido = v.vendido;
-                const statusBadge = isVendido
-                    ? '<span class="badge badge-danger"><i data-lucide="check-circle" style="width: 0.875rem; height: 0.875rem;"></i> VENDIDO</span>'
-                    : '<span class="badge badge-success"><i data-lucide="tag" style="width: 0.875rem; height: 0.875rem;"></i> À Venda</span>';
-
-                return `
-                    <div class="card ${isVendido ? 'vendido' : ''} animate-slide-up" style="padding: 1.5rem; animation-delay: ${index * 0.1}s;">
-                        <div style="display: flex; align-items: start; justify-content: space-between; margin-bottom: 1rem;">
-                            <div>
-                                <h3 style="font-size: 1.25rem; margin: 0;">${v.modelo} (${v.ano})</h3>
-                                <p style="font-size: 0.875rem; color: hsl(var(--color-muted-foreground)); margin: 0.25rem 0 0 0;">
-                                    ${v.marca}
-                                </p>
-                            </div>
-                            ${statusBadge}
-                        </div>
-
-                        <div style="margin-bottom: 1rem;">
-                            <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; color: hsl(var(--color-muted-foreground)); margin-bottom: 0.5rem;">
-                                <i data-lucide="dollar-sign" style="width: 1rem; height: 1rem;"></i>
-                                <span style="font-weight: 600; color: hsl(var(--color-success)); font-size: 1.125rem;">${formatarMoeda(v.preco)}</span>
-                            </div>
-                            <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; color: hsl(var(--color-muted-foreground));">
-                                <i data-lucide="hash" style="width: 1rem; height: 1rem;"></i>
-                                <span>${v.placa}</span>
-                            </div>
-                        </div>
-
-                        <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;">
-                            ${!isVendido ? `
-                                <button class="btn btn-success" style="padding: 0.5rem 0.75rem; font-size: 0.875rem;"
-                                        onclick="abrirConfirmacaoVenda(${vendedorId}, '${vendedorNome}', ${v.id}, '${v.modelo}', ${v.preco})">
-                                    <i data-lucide="shopping-cart" style="width: 1rem; height: 1rem;"></i>
-                                    Vender
-                                </button>
-                            ` : '<div></div>'}
-
-                            <div style="display: flex; gap: 0.5rem;">
-                                <button class="btn-icon edit" onclick="editarVeiculo(${v.id})" title="Editar">
-                                    <i data-lucide="pencil" style="width: 1rem; height: 1rem;"></i>
-                                </button>
-                                <button class="btn-icon delete" onclick="deletarVeiculo(${v.id})" title="Deletar">
-                                    <i data-lucide="trash-2" style="width: 1rem; height: 1rem;"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-
-            lucide.createIcons();
-        } catch (error) {
-            console.error('Erro ao carregar veículos:', error);
-            loading.style.display = 'none';
-            errorState.style.display = 'block';
-            lucide.createIcons();
-        }
-    }
-
-    function openModal(veiculo = null) {
-        currentVeiculo = veiculo;
-        const modal = document.getElementById('modal');
-        const form = document.getElementById('formVeiculo');
-        const modalTitle = document.getElementById('modalTitle');
-        const modalDescription = document.getElementById('modalDescription');
-        const submitText = document.getElementById('submitText');
-        const feedback = document.getElementById('feedback');
-
-        // Elementos do novo campo de Vendedor ID
-        const vendedorIdContainer = document.getElementById('vendedorIdContainer');
-        const vendedorIdInput = document.getElementById('vendedorIdInput');
-
-        form.reset();
-        feedback.innerHTML = '';
-
-        if (veiculo) {
-            modalTitle.textContent = `Editar Veículo #${veiculo.id}`;
-            modalDescription.textContent = 'Atualize as informações do veículo.';
-            submitText.textContent = 'Atualizar';
-            document.getElementById('veiculoId').value = veiculo.id;
-            document.getElementById('marca').value = veiculo.marca;
-            document.getElementById('modelo').value = veiculo.modelo;
-            document.getElementById('ano').value = veiculo.ano;
-            document.getElementById('preco').value = veiculo.preco;
-            document.getElementById('placa').value = veiculo.placa;
-            document.getElementById('placa').disabled = true;
-
-            // Lógica de Edição (Transferência de Vendedor)
-            vendedorIdContainer.style.display = 'block';
-            vendedorIdInput.value = veiculo.vendedorId; // Assumindo que o VeiculoDTO retorna vendedorId
-            vendedorIdInput.required = true;
-
-        } else {
-            modalTitle.textContent = 'Cadastrar Novo Veículo';
-            modalDescription.textContent = 'Preencha os dados do veículo.';
-            submitText.textContent = 'Cadastrar';
-            document.getElementById('placa').disabled = false;
-
-            // Lógica de Cadastro
-            vendedorIdContainer.style.display = 'none';
-            vendedorIdInput.value = '';
-            vendedorIdInput.required = false;
-        }
-
-        modal.classList.add('active');
-    }
-
-    function closeModal() {
-        const modal = document.getElementById('modal');
-        modal.classList.remove('active');
-        currentVeiculo = null;
-    }
-
-    async function editarVeiculo(id) {
-        try {
-            const response = await fetch(`${API_URL_VEICULOS}/${id}`);
-            if (response.ok) {
-                const veiculo = await response.json();
-                openModal(veiculo);
-            } else {
-                alert('Veículo não encontrado.');
-            }
-        } catch (error) {
-            alert('Erro ao buscar veículo.');
-        }
-    }
-
-    async function handleSubmit(event) {
-        event.preventDefault();
-
-        const submitBtn = document.getElementById('submitBtn');
-        const submitText = document.getElementById('submitText');
-        const feedback = document.getElementById('feedback');
-
-        submitBtn.disabled = true;
-        submitText.innerHTML = '<div class="spinner" style="width: 1rem; height: 1rem; border-width: 2px;"></div> Salvando...';
-
-        const veiculoId = document.getElementById('veiculoId').value;
-        const method = veiculoId ? 'PUT' : 'POST';
-        const url = veiculoId ? `${API_URL_VEICULOS}/${veiculoId}` : API_URL_VEICULOS;
-
-        // NOVO: Determinar o ID do Vendedor a ser enviado
-        let finalVendedorId;
-        if (veiculoId) {
-            // Se for EDIÇÃO (PUT), pega o ID do campo de input (pode ter sido alterado)
-            finalVendedorId = parseInt(document.getElementById('vendedorIdInput').value);
-        } else {
-            // Se for CADASTRO (POST), usa o ID do vendedor da página (vendedorId global)
-            finalVendedorId = parseInt(vendedorId);
-        }
-
-        const data = {
-            marca: document.getElementById('marca').value,
-            modelo: document.getElementById('modelo').value,
-            ano: parseInt(document.getElementById('ano').value),
-            // O parseFloat é aceitável, pois o Spring/Jackson irá converter para BigDecimal no backend
-            preco: parseFloat(document.getElementById('preco').value),
-            placa: document.getElementById('placa').value,
-            vendedorId: finalVendedorId // ID correto para transferência/criação
-        };
-
-        try {
-            const response = await fetch(url, {
-                method,
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            });
-
-            if (response.ok || response.status === 201) {
-                feedback.innerHTML = `
-                    <div class="alert alert-success">
-                        <i data-lucide="check-circle" style="width: 1.25rem; height: 1.25rem;"></i>
-                        <span>Veículo ${veiculoId ? 'atualizado' : 'cadastrado'} com sucesso!</span>
-                    </div>
-                `;
-                lucide.createIcons();
-
-                setTimeout(() => {
-                    closeModal();
-                    carregarVeiculosDoVendedor();
-                }, 1500);
-            } else if (response.status === 400) {
-                feedback.innerHTML = `
-                    <div class="alert alert-danger">
-                        <i data-lucide="x-octagon" style="width: 1.25rem; height: 1.25rem;"></i>
-                        <span>Erro: Verifique se a placa já existe ou se todos os campos estão preenchidos.</span>
-                    </div>
-                `;
-                lucide.createIcons();
-            } else {
-                // Tenta ler a mensagem de erro detalhada da API se houver (opcional)
-                const errorBody = await response.text();
-                console.error('Erro da API:', errorBody);
-
-                feedback.innerHTML = `
-                    <div class="alert alert-danger">
-                        <i data-lucide="wifi-off" style="width: 1.25rem; height: 1.25rem;"></i>
-                        <span>Erro ao salvar. Detalhes: ${response.status} (${errorBody.substring(0, 50)}...)</span>
-                    </div>
-                `;
-                lucide.createIcons();
-            }
-        } catch (error) {
-            feedback.innerHTML = `
-                <div class="alert alert-danger">
-                    <i data-lucide="wifi-off" style="width: 1.25rem; height: 1.25rem;"></i>
-                    <span>Erro de comunicação com a API.</span>
-                </div>
-            `;
-            lucide.createIcons();
-        } finally {
-            submitBtn.disabled = false;
-            submitText.textContent = veiculoId ? 'Atualizar' : 'Cadastrar';
-        }
-    }
-
-    async function deletarVeiculo(id) {
-        if (!confirm('Tem certeza que deseja deletar este veículo? Isso será possível apenas se não houver vendas registradas.')) return;
-
-        try {
-            const response = await fetch(`${API_URL_VEICULOS}/${id}`, { method: 'DELETE' });
-
-            if (response.status === 204) {
-                alert('Veículo deletado com sucesso!');
-                carregarVeiculosDoVendedor();
-            } else if (response.status === 404) {
-                alert('Veículo não encontrado.');
-            } else if (response.status === 409) {
-                alert('Não foi possível deletar: O veículo possui vendas registradas.');
-            } else {
-                alert('Erro ao deletar veículo.');
-            }
-        } catch (error) {
-            alert('Erro de comunicação ao deletar.');
-        }
-    }
-
-    function abrirConfirmacaoVenda(vendedorId, vendedorNome, veiculoId, veiculoModelo, preco) {
-        const precoNumerico = parseFloat(preco);
-
-        if (isNaN(precoNumerico)) {
-            const precoLimpo = String(preco).replace('R$', '').replace(/\./g, '').replace(',', '.').trim();
-            const precoFinal = parseFloat(precoLimpo);
-
-            if (isNaN(precoFinal)) {
-                alert('Erro: Preço inválido para iniciar a venda.');
-                return;
-            }
-
-            window.location.href = `confirmar_venda.html?vendedorId=${vendedorId}&vendedorNome=${vendedorNome}&veiculoId=${veiculoId}&veiculoModelo=${veiculoModelo}&preco=${precoFinal}`;
-            return;
-        }
-
-        window.location.href = `confirmar_venda.html?vendedorId=${vendedorId}&vendedorNome=${vendedorNome}&veiculoId=${veiculoId}&veiculoModelo=${veiculoModelo}&preco=${precoNumerico}`;
-    }
-
-    function formatarMoeda(valor) {
-        const valorNumerico = parseFloat(valor);
-        if (isNaN(valorNumerico)) return 'R$ 0,00';
-        return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valorNumerico);
-    }
-
-    document.getElementById('modal').addEventListener('click', function(e) {
-        if (e.target === this) closeModal();
-    });
-
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') closeModal();
-    });
-</script>
+<!-- Utilitários e Lógica -->
+<script src="scripts/utils.js"></script>
+<script src="scripts/veiculos_vendedor.js"></script>
 </body>
 </html>

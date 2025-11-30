@@ -13,8 +13,4 @@ public class VendaInputDTO {
 
     @NotNull(message = "Vendedor é obrigatorio")
     private Long vendedorId;
-
-    @Positive(message = "Valor total deve ser maior que 0")
-    @NotNull(message = "O valor total é obrigatório")
-    private BigDecimal valorTotal;
 }
