@@ -43,12 +43,6 @@ public class VendedorService {
                 .map(this::mapearParaDetalhesDTO);
     }
 
-    public Optional<Vendedor> BuscarVendedorEntidade(Long id)
-    {
-        validarId(id);
-        return vendedorRepository.findById(id);
-    }
-
     public VendedorListagemDTO salvar(VendedorInputDTO vendedor)
     {
         if (vendedor == null) {
@@ -69,7 +63,7 @@ public class VendedorService {
 
     public Optional<VendedorListagemDTO> atualizar(Long id, VendedorInputDTO vendedor) {
         if (vendedor == null) {
-           throw ApiException.badRequest("Objeto vendedor não pode ser nulo.");
+            throw ApiException.badRequest("Objeto vendedor não pode ser nulo.");
         }
 
         validarId(id);
@@ -124,24 +118,32 @@ public class VendedorService {
 
     private VendedorListagemDTO mapearParaListagemDTO(Vendedor vendedor)
     {
+        if (vendedor == null) {
+            throw ApiException.badRequest("Vendedor não pode ser nulo ao mapear para listagem.");
+        }
         VendedorListagemDTO vendedorDTO = new VendedorListagemDTO();
         vendedorDTO.setNome(vendedor.getNome());
         vendedorDTO.setEmail(vendedor.getEmail());
         vendedorDTO.setTelefone(vendedor.getTelefone());
         vendedorDTO.setId(vendedor.getId());
-        vendedorDTO.setNumeroVeiculos(vendedor.getVeiculos().size());
+        vendedorDTO.setNumeroVeiculos(vendedor.getVeiculos() == null ? 0 : vendedor.getVeiculos().size());
         return vendedorDTO;
     }
 
     private VendedorDetalhesDTO mapearParaDetalhesDTO(Vendedor vendedor)
     {
+        if (vendedor == null) {
+            throw ApiException.badRequest("Vendedor não pode ser nulo ao mapear para detalhes.");
+        }
         VendedorDetalhesDTO vendedorDTO = new VendedorDetalhesDTO();
         vendedorDTO.setNome(vendedor.getNome());
         vendedorDTO.setEmail(vendedor.getEmail());
         vendedorDTO.setTelefone(vendedor.getTelefone());
         vendedorDTO.setId(vendedor.getId());
 
-        List<VeiculoOutputDTO> veiculoOutputDTOS = vendedor.getVeiculos()
+        List<VeiculoOutputDTO> veiculoOutputDTOS = vendedor.getVeiculos() == null
+                ? List.of()
+                : vendedor.getVeiculos()
                 .stream()
                 .map(v -> veiculoService.mapearParaDTO(v))
                 .toList();
@@ -152,6 +154,9 @@ public class VendedorService {
 
     protected Vendedor mapearParaEntidade(VendedorInputDTO dto)
     {
+        if (dto == null) {
+            return null;
+        }
         Vendedor vendedor = new Vendedor();
         vendedor.setNome(dto.getNome());
         vendedor.setEmail(dto.getEmail());
