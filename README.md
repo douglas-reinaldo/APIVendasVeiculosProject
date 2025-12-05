@@ -32,7 +32,7 @@ Sistema completo de gestão de vendas de veículos que permite cadastrar vendedo
 
 ### 🌟 Destaques
 
-- ✅ **API RESTful** com padrão de DTOs
+- ✅ **API REST** com padrão de DTOs
 - ✅ **Validação de dados** com Bean Validation
 - ✅ **Tratamento global de exceções**
 - ✅ **Interface web moderna** com design Ocean Breeze Professional
